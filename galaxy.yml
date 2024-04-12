@@ -1,0 +1,38 @@
+---
+authors:
+  - Luis Javier Arizmendi Alonso @luisarizmendi
+dependencies: 
+  "containers.podman": "*"
+  "infra.osbuild": "*"
+  "redhat_cop.controller_configuration": "*"
+  "infra.eda_configuration": "*"
+description: Ansible content to deploy Red Hat Device Edge management tools for demo and PoC.
+documentation: https://github.com/luisarizmendi/rh_edge_mgmt/blob/devel/README.md
+license:
+  - GPL-3.0-only
+namespace: luisarizmendi
+name: rh_edge_mgmt
+version: 1.0.0-devel
+readme: README.md
+repository: https://github.com/luisarizmendi/rh_edge_mgmt
+issues: https://github.com/luisarizmendi/rh_edge_mgmt/issues
+tags:
+  - cloud
+  - infrastructure
+  - ansible
+  - event
+  - driven
+  - controller
+  - eda
+  - automation
+  - rhde
+  - gitea
+  - fdo
+  - image-builder
+build_ignore:
+  - tools
+  - setup.cfg
+  - galaxy.yml.j2
+  - template_galaxy.yml
+  - '*.tar.gz'
+... 
