@@ -1,0 +1,48 @@
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:7db345570423005b3df88c6209fbee5c9ef9fd2fe909c3198c186c29d2dcd1b5"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0f2231a2c96c106c62c17402fa826eddc1917a7c8d78160bf373cc3946c99c20"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:14187baa4493f3f28d8c535ff24db7d34095dba56756d80f78e76431c35d0f3a"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:20ed327b89dd0c1713419c451ff6f1bb00fd4ea25c137baf828fae824b10c72b"
+
+[[containers]]
+source = "registry.access.redhat.com/ubi8/openssl@sha256:9e743d947be073808f7f1750a791a3dbd81e694e37161e8c6c6057c2c342d671"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:0196ad97908dc257c40ab53e5c45abc3a7456c8b349104d106ce7673313cd6a4"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:a84d2a4c63f9a9822c850702cd6a52183fd938491c4367bcf591c32d4fc77d70"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:fe2291b542f983ba1c66b60c0c5e8ddb47a221ed550f6551efacb6c5f466120e"
+
+[[containers]]
+source = "registry.redhat.io/lvms4/topolvm-rhel9@sha256:d0c039eba8157965b0a7971ad4e01576d2c1e31b09fe938554163b324cc4dc73"
+
+[[containers]]
+source = "registry.redhat.io/openshift4/ose-csi-node-driver-registrar@sha256:caa0bbab808d8cbed476e8fa3e296ceb90f8d7d253e36588fa77e639ea389d55"
+
+[[containers]]
+source = "registry.redhat.io/openshift4/ose-csi-livenessprobe@sha256:829a8e4d34404abbd22fddb6ebfa0f74daa55f2697fb147da77b83fc8b473d8c"
+
+[[containers]]
+source = "registry.redhat.io/openshift4/ose-csi-external-resizer@sha256:7ee0257998b7f804fcde9c095b4dc240c510eb316d7223e8485f701b5c9f2fbf"
+
+[[containers]]
+source = "registry.redhat.io/openshift4/ose-csi-external-provisioner@sha256:b453a5c76ba4e975a978e31a51531b1d6233723b0d944622caf7844dedf9ad5a"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:2d3fa7f6f87c1e0c398d8e1e96f777c2875277abf53711f7dc1f4b95285c2128"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:18a8c2a958791495bb15e12040e4188806764d52d7afd57cd1d9f8f36e389fb9"
+
+[[containers]]
+source = "quay.io/openshift-release-dev/ocp-v4.0-art-dev@sha256:99c1c6ccfe098c4d45bb35b6053672396ddc5c67ec3ee283c5e2b46d44ed71e4"
+
