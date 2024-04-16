@@ -67,9 +67,9 @@
   ansible.builtin.include_role:
     name: redhat_cop.controller_configuration.credentials
   vars:
-    controller_username: "{{ gitea_user_name }}{{ user_number }}"
-    controller_password: "{{ gitea_user_password }}{{ user_number }}"
-  loop: "{{ range(1, (gitea_user_count + 1), 1)|list }}"
+    controller_username: "{{ aap_user_name }}{{ user_number }}"
+    controller_password: "{{ aap_user_password }}{{ user_number }}"
+  loop: "{{ range(1, (aap_user_count + 1), 1)|list }}"
   loop_control:
     loop_var: user_number
 
@@ -78,9 +78,9 @@
   ansible.builtin.include_role:
     name: redhat_cop.controller_configuration.projects
   vars:
-    controller_username: "{{ gitea_user_name }}{{ user_number }}"
-    controller_password: "{{ gitea_user_password }}{{ user_number }}"
-  loop: "{{ range(1, (gitea_user_count + 1), 1)|list }}"
+    controller_username: "{{ aap_user_name }}{{ user_number }}"
+    controller_password: "{{ aap_user_password }}{{ user_number }}"
+  loop: "{{ range(1, (aap_user_count + 1), 1)|list }}"
   loop_control:
     loop_var: user_number
 
@@ -89,9 +89,9 @@
   ansible.builtin.include_role:
     name: redhat_cop.controller_configuration.hosts
   vars:
-    controller_username: "{{ gitea_user_name }}{{ user_number }}"
-    controller_password: "{{ gitea_user_password }}{{ user_number }}"
-  loop: "{{ range(1, (gitea_user_count + 1), 1)|list }}"
+    controller_username: "{{ aap_user_name }}{{ user_number }}"
+    controller_password: "{{ aap_user_password }}{{ user_number }}"
+  loop: "{{ range(1, (aap_user_count + 1), 1)|list }}"
   loop_control:
     loop_var: user_number
 
@@ -100,9 +100,9 @@
   ansible.builtin.include_role:
     name: redhat_cop.controller_configuration.job_templates
   vars:
-    controller_username: "{{ gitea_user_name }}{{ user_number }}"
-    controller_password: "{{ gitea_user_password }}{{ user_number }}"
-  loop: "{{ range(1, (gitea_user_count + 1), 1)|list }}"
+    controller_username: "{{ aap_user_name }}{{ user_number }}"
+    controller_password: "{{ aap_user_password }}{{ user_number }}"
+  loop: "{{ range(1, (aap_user_count + 1), 1)|list }}"
   loop_control:
     loop_var: user_number
 
@@ -111,9 +111,9 @@
   ansible.builtin.include_role:
     name: redhat_cop.controller_configuration.workflow_job_templates
   vars:
-    controller_username: "{{ gitea_user_name }}{{ user_number }}"
-    controller_password: "{{ gitea_user_password }}{{ user_number }}"
-  loop: "{{ range(1, (gitea_user_count + 1), 1)|list }}"
+    controller_username: "{{ aap_user_name }}{{ user_number }}"
+    controller_password: "{{ aap_user_password }}{{ user_number }}"
+  loop: "{{ range(1, (aap_user_count + 1), 1)|list }}"
   loop_control:
     loop_var: user_number
 
@@ -121,9 +121,9 @@
   ansible.builtin.include_role:
     name: redhat_cop.controller_configuration.notification_templates
   vars:
-    controller_username: "{{ gitea_user_name }}{{ user_number }}"
-    controller_password: "{{ gitea_user_password }}{{ user_number }}"
-  loop: "{{ range(1, (gitea_user_count + 1), 1)|list }}"
+    controller_username: "{{ aap_user_name }}{{ user_number }}"
+    controller_password: "{{ aap_user_password }}{{ user_number }}"
+  loop: "{{ range(1, (aap_user_count + 1), 1)|list }}"
   loop_control:
     loop_var: user_number
   when: controller_notifications is defined
