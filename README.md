@@ -1,5 +1,8 @@
 # Ansible Collection - luisarizmendi.rh_edge_mgmt
 
+This Ansible Collection helps installing and configuring the following architecture for demos and PoCs:
+
+![demo-arch](docs/images/demo-arch.png)
 
 ## Roles
 
@@ -7,8 +10,19 @@ The collection is composed by two main roles:
 
 * [config_rh_edge-mgmt-node](roles/setup_rh_edge-mgmt-node/README.md) that deploy RHDE management services
 
+This Ansible Role was created to be used as a simple way of deploying all Management components that you would need to run a Red Hat Edge Management DEMO:
+
+* Image Builder
+* FDO Servers
+* Ansible Automation Platform (Controller, Hub and Event Driven Automation)
+* Gitea
+
 * [setup_rh_edge-mgmt-node](roles/config_rh_edge-mgmt-node/README.md) that configure those services
 
+This Ansible Role was created to be used as a simple way of configuring the following components that you would need to run a Red Hat Edge Management DEMO:
+
+* Ansible Automation Platform (Controller and Event Driven Automation)
+* Gitea
 
 ## Pre-requisites
 
