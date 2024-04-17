@@ -62,7 +62,7 @@ dependencies:
 repository: https://github.com/luisarizmendi/rh_edge_mgmt
 
 # The URL to any online docs
-documentation: http://docs.example.com
+documentation: https://github.com/luisarizmendi/rh_edge_mgmt
 
 # The URL to the homepage of the collection/project
 homepage: https://github.com/luisarizmendi/rh_edge_mgmt
