@@ -114,7 +114,7 @@ Use a task to call the role, as it appears in the example below:
   tasks:
     - name: Install management node
       ansible.builtin.include_role:
-        name: ../../../../common/roles/setup_edge-mgmt-node
+        name: luisarizmendi.rh_edge_mgmt.setup_rh_edge_mgmt_node
 ```
 
 By default the role deploys all services. If you want to remove any of them, or if you need to customize your servers you can add the variables that you want to change from the [role defaults](defaults/main.yml), for example, if you don't want to deploy the FDO servers:
@@ -126,7 +126,7 @@ By default the role deploys all services. If you want to remove any of them, or 
   tasks:
     - name: Install management node
       ansible.builtin.include_role:
-        name: ../../../../common/roles/setup_edge-mgmt-node
+        name: luisarizmendi.rh_edge_mgmt.setup_rh_edge_mgmt_node
       vars:
         include_fdo: false
 ```

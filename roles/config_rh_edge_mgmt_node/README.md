@@ -166,7 +166,7 @@ Use a task to call the role, as it appears in the example below, including your 
 ```yaml
 - name: Config management node
   ansible.builtin.include_role:
-    name: ../../../../common/roles/config_rh_edge-mgmt-node
+    name: luisarizmendi.rh_edge_mgmt.config_rh_edge-mgmt-node
   vars:
     gitea_admin_repos_template: ../templates/gitea_admin_repos
     gitea_user_repos_template: ../templates/gitea_user_repos
