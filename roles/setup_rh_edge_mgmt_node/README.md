@@ -14,6 +14,9 @@ This Ansible Role was created to be used as a simple way of deploying all Manage
 
 I've been able to deploy everything on a VM with 4 vCores and 10GB of memory. Storage will depend on the number of RHDE images that you generate.
 
+### Subscribed RHEL System
+
+You need a server with RHEL 9 installed (the collection has been tested with RHEL 9.3) that wil be the target node (selected in the Ansible inventory) where installing the services. It must be register with a valid Red Hat Subscription.
 
 ### Ansible Collections
 
