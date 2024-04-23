@@ -16,7 +16,7 @@ I've been able to deploy everything on a VM with 4 vCores and 10GB of memory. St
 
 ### Subscribed RHEL System
 
-You need a server with RHEL 9 installed (the collection has been tested with RHEL 9.3) that wil be the target node (selected in the Ansible inventory) where installing the services. It must be register with a valid Red Hat Subscription.
+You need a server with RHEL 9 installed (the collection has been tested with RHEL 9.3) that will be the target node (selected in the Ansible inventory) where installing the services. It must be registered with a valid Red Hat Subscription.
 
 ### Ansible Collections
 
