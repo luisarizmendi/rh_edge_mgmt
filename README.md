@@ -14,7 +14,7 @@ If you need a quick deployment and you don't want to expend time reading the rol
 ansible-galaxy collection install luisarizmendi.rh_edge_mgmt
 ```
 
-2. Clone this repo and move into the `docs/example` directory
+2. Clone this repo and move it into the `docs/example` directory
 
 ```shell
 git clone https://github.com/luisarizmendi/rh_edge_mgmt
@@ -51,7 +51,7 @@ vi inventory
 ansible-playbook -vvi inventory --ask-vault-pass playbooks/main.yml
 ```
 
-8. Wait until the playbook finish and, after a couple of minutes, you will be able to access the deployed services in the target host with the default user/password (there are 3 users created by default, the first one is `user1`):
+8. Wait until the playbook finishes and, after a couple of minutes, you will be able to access the deployed services in the target host with the default user/password (there are 3 users created by default, the first one is `user1`):
 
 * Ansible Automation Platform Controller: 8080 (HTTP) / 8443 (HTTPS) - `user<number>/password<number>`
 * Ansible Automation Platform Event-Driven Ansible Controller: 8082 (HTTP) / 8445 (HTTPS) - `admin/R3dh4t1!`
