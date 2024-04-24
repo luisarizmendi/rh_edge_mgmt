@@ -8,7 +8,7 @@ This Ansible Collection helps installing and configuring the following architect
 
 If you need a quick deployment and you don't want to expend time reading the role documentation, try this:
 
-1. You need to install the [Ansible Collection](https://github.com/luisarizmendi/rh_edge_mgmt) on your laptop (of course you will also need `ansible` and `ansible-galaxy`)
+1. You need to install the [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/luisarizmendi/rh_edge_mgmt/) on your laptop (of course you will also need `ansible` and `ansible-galaxy`)
 
 ```shell
 ansible-galaxy collection install luisarizmendi.rh_edge_mgmt
@@ -91,7 +91,7 @@ This Ansible Role was created to be used as a simple way of configuring the foll
 
 ### Ansible Collection
 
-You need to install the [Ansible Collection](https://github.com/luisarizmendi/rh_edge_mgmt) on your laptop:
+You need to install the [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/luisarizmendi/rh_edge_mgmt/) on your laptop:
 
 ```shell
 ansible-galaxy collection install luisarizmendi.rh_edge_mgmt
