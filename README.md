@@ -2,7 +2,7 @@
 
 This Ansible Collection helps installing and configuring the following architecture for demos and PoCs:
 
-![demo-arch](docs/images/demo-arch.png)
+![demo-arch](https://raw.githubusercontent.com/luisarizmendi/rh_edge_mgmt/main/docs/images/demo-arch.png)
 
 ## TL/DR
 
