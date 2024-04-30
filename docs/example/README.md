@@ -72,7 +72,11 @@ You can also take a look at the pre-requistes of the config role, but mainly is 
 
 ### Ansible inventory and variables
 
-Prepare the Ansible inventory file and the variables in the `main.yml` playbook as explained in the roles README files.
+Prepare the Ansible inventory file and the variables in the `main.yml` playbook as explained in the roles README files. 
+
+  >**Note**
+  >
+  > If you are using the directory tree of this example you could keep the variables that you find there (`gitea_admin_repos_template`, `aap_config_template`, ...), but probably you will need to configure the `image_builder_admin_name` and `image_builder_admin_password` with the user with `sudo` privileges in the RHEL server where you installed the Image Builder. 
 
 
 ## DEMO deployment
