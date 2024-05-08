@@ -1,0 +1,15 @@
+---
+    - name: Install WireGuard
+      become: true
+      package:
+        name: wireguard-tools
+        state: present
+
+
+    - name: Open TCP ports for Wireguard
+      become: true
+      firewalld:
+        port: "{{ wireguard_port | default('51820') }}/tcp"
+        permanent: yes
+        state: enabled
+        zone: public

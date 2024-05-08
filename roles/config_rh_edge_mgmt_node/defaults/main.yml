@@ -34,3 +34,4 @@ gitea_user_count: 3
 gitea_user_name: user
 gitea_user_password: password
 gitea_webhook_target: "{{ ansible_host }}:5000"
+

@@ -1,4 +1,7 @@
 ---
+- name: import vpn tasks
+  ansible.builtin.import_tasks: install_vpn.yml
+  when: include_vpn | default(true)
 
 - name: import image-builder tasks
   ansible.builtin.import_tasks: install_image-builder.yml
