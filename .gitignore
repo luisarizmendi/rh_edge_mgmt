@@ -1,1 +1,7 @@
 *.tar.gz
+
+# example
+!**/.keep
+aap.tar.gz
+manifest.zip
+microshift-embedded-images.toml
