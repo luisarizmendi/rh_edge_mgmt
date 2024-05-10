@@ -5,16 +5,16 @@
 
 - name: import image-builder tasks
   ansible.builtin.import_tasks: install_image-builder.yml
-  when: include_image_builder | default(false)
+  when: include_image_builder | default(true)
 
 - name: import fdo tasks
   ansible.builtin.import_tasks: install_fdo.yml
-  when: include_fdo | default(false)
+  when: include_fdo | default(true)
 
 - name: import gitea tasks
   ansible.builtin.import_tasks: install_gitea.yml
-  when: include_gitea | default(false)
+  when: include_gitea | default(true)
 
 - name: import aap tasks
   ansible.builtin.import_tasks: install_aap.yml
-  when: include_aap | default(false)
+  when: include_aap | default(true)

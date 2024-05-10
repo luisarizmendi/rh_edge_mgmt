@@ -1,0 +1,9 @@
+config setup
+    protostack=netkey
+
+conn edgedevices
+    left=%any
+    right={{ ansible_host }}
+    authby=secret
+    # use auto=start when done testing the tunnel
+    auto=add

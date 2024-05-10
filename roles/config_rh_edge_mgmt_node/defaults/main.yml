@@ -35,3 +35,10 @@ gitea_user_name: user
 gitea_user_password: password
 gitea_webhook_target: "{{ ansible_host }}:5000"
 
+# VPN
+vpn_subnet: "10.8.0.0"
+vpn_mask: "24"
+vpn_gateway: "10.8.0.1"
+dhcp_range_start: "10.8.0.100"
+dhcp_range_end: "10.8.0.200"
+vpn_psk: "R3dh4t1!"

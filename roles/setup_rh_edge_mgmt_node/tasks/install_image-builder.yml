@@ -1,5 +1,16 @@
 ---
 # Install image-builder with infra.osbuild collection (https://github.com/redhat-cop/infra.osbuild)
+- name: Include secrets file with offline_token
+  include_vars:
+    file: "../vars/secrets.yml"
+
+- name: Subscribe the system
+  become: true
+  shell: |
+    subscription-manager register --username={{ red_hat_user }} --password={{ red_hat_password }} --force
+    subscription-manager attach
+    subscription-manager config --rhsm.manage_repos=1
+
 - name: Prepare Image Builder server
   become: true
   ansible.builtin.import_role:
@@ -152,6 +163,7 @@
               cmd: jq -r '.images | .[] | ("[[containers]]\nsource = \"" + . + "\"\n")' "./usr/share/microshift/release/release-{{ ansible_architecture }}.json" >> "/root/blueprint-microshift-embedded.toml"
 
           - name: Create ../files directory on localhost if it doesn't exist
+            become: false
             delegate_to: localhost
             ansible.builtin.file:
               path: "../files"

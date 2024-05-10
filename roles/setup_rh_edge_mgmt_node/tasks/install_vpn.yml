@@ -1,15 +1,36 @@
 ---
-    - name: Install WireGuard
-      become: true
-      package:
-        name: wireguard-tools
-        state: present
-
-
-    - name: Open TCP ports for Wireguard
+    - name: Open firewalld protocols for libreSwan
       become: true
       firewalld:
-        port: "{{ wireguard_port | default('51820') }}/tcp"
-        permanent: yes
+        rich_rule: "rule protocol value={{ item }} accept"
+        permanent: true
         state: enabled
-        zone: public
+        immediate: yes
+      with_items:
+        - ah
+        - esp
+
+    - name: Open firewalld ports for libreSwan
+      become: true
+      firewalld:
+        port: "{{ item }}"
+        permanent: true
+        state: enabled
+        immediate: yes
+      with_items:
+        - 500/udp
+        - 4500/udp
+
+    - name: Reload firewalld
+      become: true
+      service:
+        name: firewalld
+        state: reloaded
+
+    - name: Install VPN required packages
+      become: true
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - libreswan

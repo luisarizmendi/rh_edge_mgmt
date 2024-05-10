@@ -1,25 +1,21 @@
 ---
 
-    - name: Generate server private key
-      become: true
-      shell: wg genkey
-      register: server_private_key
-
-    - name: Generate server public key
-      become: true
-      shell: echo "{{ server_private_key.stdout }}" | wg pubkey
-      register: server_public_key
-
-    - name: Configure WireGuard server
+    - name: Configure IPsec
       become: true
       template:
-        src: "{{ wireguard_server_conf_template }}"
-        dest: "/etc/wireguard/server.conf"
-      vars:
-        server_public_key: "{{ server_public_key.stdout  }}"
+        src: "{{ vpn_ipsec_conf_file | default('../templates/ipsec.conf.j2') }}"
+        dest: /etc/ipsec.conf
 
-    - name: Restart WireGuard
+    - name: Configure libreSwan secrets
+      become: true
+      template:
+        src: "{{ vpn_ipsec_secrets_file | default('../templates/ipsec.secrets.j2') }}"
+        dest: /etc/ipsec.secrets
+
+    - name: Start and enable ipsec server
       become: true
       service:
-        name: wg-quick@server.service
+        name: ipsec
         state: restarted
+        enabled: yes
+
