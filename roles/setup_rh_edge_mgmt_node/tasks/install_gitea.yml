@@ -11,7 +11,16 @@
         state: latest
         name: "podman"
 
+
+    - name: Check if firewalld is installed
+      become: true
+      shell: rpm -q firewalld  
+      register: firewalld_installed
+      ignore_errors: yes  
+
+
     - name: Open TCP ports for AAP Controller
+      when: firewalld_installed.rc == 0
       become: true
       firewalld:
         port: "{{ item }}"

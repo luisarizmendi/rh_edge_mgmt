@@ -1,4 +1,24 @@
 ---
+
+- name: Check if firewalld is installed
+  become: true
+  shell: rpm -q firewalld  
+  register: firewalld_installed
+  ignore_errors: yes  
+
+- name: Configure Firewall
+  when: firewalld_installed.rc == 0
+  block:
+    - name: Install VPN required packages
+      become: true
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - python3-firewall
+        - libreswan
+
+
     - name: Open firewalld protocols for libreSwan
       become: true
       firewalld:
@@ -27,10 +47,3 @@
         name: firewalld
         state: reloaded
 
-    - name: Install VPN required packages
-      become: true
-      package:
-        name: "{{ item }}"
-        state: present
-      loop:
-        - libreswan

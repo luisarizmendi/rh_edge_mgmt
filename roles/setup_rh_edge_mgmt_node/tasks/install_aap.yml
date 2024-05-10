@@ -148,7 +148,15 @@
         cd /home/{{ ansible_user }}/aap_install
         ansible-playbook -i inventory ansible.containerized_installer.install > /home/{{ ansible_user }}/.aap_install.log 2>&1
 
+
+    - name: Check if firewalld is installed
+      become: true
+      shell: rpm -q firewalld  
+      register: firewalld_installed
+      ignore_errors: yes  
+
     - name: Open TCP ports for EDA
+      when: firewalld_installed.rc == 0
       become: true
       firewalld:
         port: "{{ eda_webhook_port | default('5000') }}/tcp"

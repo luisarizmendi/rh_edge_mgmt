@@ -22,7 +22,14 @@
         dest: /etc/fdo/manufacturing-server.conf.d/manufacturing-server.yml
         mode: 0644
 
+    - name: Check if firewalld is installed
+      become: true
+      shell: rpm -q firewalld  
+      register: firewalld_installed
+      ignore_errors: yes  
+
     - name: Configure firewall rules
+      when: firewalld_installed.rc == 0
       ansible.builtin.firewalld:
         port: "{{ fdo_manufacturing_port | default('8080')}}/tcp"
         state: enabled
@@ -58,6 +65,7 @@
         mode: 0644
 
     - name: Configure firewall rules
+      when: firewalld_installed.rc == 0
       ansible.builtin.firewalld:
         port: "{{ fdo_rendezvous_port | default('8082')}}/tcp"
         state: enabled
@@ -101,6 +109,7 @@
         mode: 0644
 
     - name: Configure firewall rules
+      when: firewalld_installed.rc == 0
       ansible.builtin.firewalld:
         port: "{{ fdo_owner_port | default('8081')}}/tcp"
         state: enabled
@@ -112,6 +121,7 @@
 
 
     - name: Configure firewall rules
+      when: firewalld_installed.rc == 0
       ansible.builtin.firewalld:
         port: "{{ fdo_serviceinfo_api_port | default('8083')}}/tcp"
         state: enabled
