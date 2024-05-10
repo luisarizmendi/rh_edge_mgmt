@@ -1,9 +1,22 @@
 config setup
     protostack=netkey
 
+conn %default
+    ikelifetime=28800s
+    keylife=3600s
+    rekeymargin=3m
+    keyingtries=1
+    keyexchange=ike
+    ikev2=yes
+
 conn edgedevices
+    encapsulation=yes
     left=%any
-    right={{ ansible_host }}
+    right={{ aap_ip_private }}
     authby=secret
-    # use auto=start when done testing the tunnel
-    auto=add
+    auto=start
+    ike=3des-sha1,aes-sha1
+    esp=aes-sha2_512+sha2_256
+    # Add traffic selectors
+    leftsubnets={192.168.0.0/16 172.16.0.0/12}
+    rightsubnet={{ aap_ip_private }}/32
