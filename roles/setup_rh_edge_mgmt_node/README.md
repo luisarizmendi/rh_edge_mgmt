@@ -6,6 +6,7 @@ This Ansible Role was created to be used as a simple way of deploying all Manage
 * FDO Servers
 * Ansible Automation Platform (Controller, Hub and Event Driven Automation)
 * Gitea
+* IPSec VPN server
 
 ## Pre-requisites
 

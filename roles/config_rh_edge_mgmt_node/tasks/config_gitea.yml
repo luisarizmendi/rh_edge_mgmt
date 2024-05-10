@@ -1,16 +1,16 @@
 ---
 
-    - name: Get default gateway
-      shell: ip route show default | awk '/default/ {print $3}'
-      register: gateway_result
+- name: Get default gateway
+  shell: ip route show default | awk '/default/ {print $3}'
+  register: gateway_result
 
-    - name: Get IP of interface used to reach default gateway
-      shell: ip route get {{ gateway_result.stdout }} | awk '/src/ {print $7}'
-      register: interface_result
+- name: Get IP of interface used to reach default gateway
+  shell: ip route get {{ gateway_result.stdout }} | awk '{print $5}'
+  register: interface_result
 
-    - name: Set private IP variable
-      set_fact:
-        aap_ip_private: "{{ interface_result.stdout }}"
+- name: Set private IP variable
+  set_fact:
+    aap_ip_private: "{{ interface_result.stdout }}"
         
 ###########  ADMIN
 

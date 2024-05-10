@@ -5,7 +5,7 @@
       register: gateway_result
 
     - name: Get IP of interface used to reach default gateway
-      shell: ip route get {{ gateway_result.stdout }} | awk '/src/ {print $7}'
+      shell: ip route get {{ gateway_result.stdout }} | awk '{print $5}'
       register: interface_result
 
     - name: Set private IP variable

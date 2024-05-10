@@ -36,4 +36,5 @@ gitea_user_password: password
 gitea_webhook_target: "{{ ansible_host }}:5000"
 
 # VPN
+include_vpn: true
 vpn_psk: "R3dh4t1!"

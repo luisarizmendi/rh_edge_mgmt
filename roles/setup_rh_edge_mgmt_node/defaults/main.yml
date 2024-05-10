@@ -32,3 +32,8 @@ include_gitea: true
 gitea_version: "1.21.7"
 gitea_user: admin
 gitea_password: R3dh4t1!
+
+
+# VPN
+include_vpn: true
+vpn_psk: "R3dh4t1!"

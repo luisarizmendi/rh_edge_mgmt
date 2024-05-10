@@ -39,7 +39,7 @@ red_hat_user: <your RHN user>
 red_hat_password: <your RHN password>
 ```
 
-6. Add the target host where you will install the management services (Ansible Automation Platform, Event Driven Automation, Gitea and Image-Builder) in the `inventory` file. This must be a RHEL 9 (the collection was tested with 9.3) with 4 vCores and at least 10GB of memory and 50GB of disk. That system must have a valid Red Hat Subscription in place. Remember to configure passwordless access to the username that you use for access the node and run the ansible playbooks (or configure a valid sudo password in the inventory file).
+6. Add the target host where you will install the management services (Ansible Automation Platform, Event Driven Automation, Gitea and Image-Builder) in the `inventory` file. This must be a RHEL 9 (the collection was tested with 9.3) with 4 vCores and at least 10GB of memory and 50GB of disk. Remember to configure passwordless access to the username that you use for access the node and run the ansible playbooks (or configure a valid sudo password in the inventory file).
 
 ```shell
 vi inventory
@@ -62,6 +62,9 @@ ansible-playbook -vvi inventory --ask-vault-pass playbooks/main.yml
 9. You can now follow the [example demo steps](docs/example/README.md#demo-steps).
 
 
+If you want to use the script to create the instance in AWS:
+
+6. Be sure that 
 
 
 <br><br>
