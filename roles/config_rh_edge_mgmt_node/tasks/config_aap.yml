@@ -10,17 +10,6 @@
   ansible.builtin.include_vars: "/tmp/aap_config.yml"
 
 
-### CONTROLLER
-
-- name: Generate AAP config
-  delegate_to: localhost
-  template:
-    src: "{{ aap_config_template }}"
-    dest: /tmp/aap_config.yml
-
-- name: Load variables
-  ansible.builtin.include_vars: "/tmp/aap_config.yml"
-
 ## Cross Organization
 - name: configure execution environments
   when: controller_execution_environments is defined
@@ -80,9 +69,11 @@
   vars:
     controller_username: "{{ aap_user_name }}{{ user_number }}"
     controller_password: "{{ aap_user_password }}{{ user_number }}"
+    update_project: true
   loop: "{{ range(1, (aap_user_count + 1), 1)|list }}"
   loop_control:
     loop_var: user_number
+
 
 - name: configure hosts
   when: controller_hosts is defined

@@ -1,0 +1,49 @@
+{% raw %}
+---
+- name: Clone GitHub Repository and Copy Files
+  hosts:
+    - all
+  gather_facts: no
+
+  vars:
+    local_clone_path: "/tmp/repo_clone"
+    target_path: "/etc/containers/systemd"
+  tasks:
+    - name: Remove the local clone
+      file:
+        path: "{{ local_clone_path }}"
+        state: absent
+    - name: Clone repo 
+      ansible.builtin.shell:            
+        cmd: "git clone http://{{ git_user }}:'{{ git_password }}'@{{ git_repo_url }} {{ local_clone_path }}"
+       
+    - name: Copy files to the target host
+      copy:
+        src: "{{ local_clone_path }}/{{ path_prefix }}/{{ env }}/{{ path }}"
+        dest: "{{ target_path }}"
+        remote_src: yes
+
+    - name: Remove the local clone
+      file:
+        path: "{{ local_clone_path }}"
+        state: absent
+
+
+    - name: Reload systemd manager
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Get list of .container files in /etc/containers/systemd/
+      find:
+        paths: /etc/containers/systemd/
+        patterns: "*.container"
+      register: container_files
+      changed_when: false
+
+    - name: Restart systemd units
+      systemd:
+        name: "{{ item.path | basename | regex_replace('(.*)\\.container', '\\1.service') }}"
+        state: restarted
+      loop: "{{ container_files.files }}"
+      
+{% endraw %}

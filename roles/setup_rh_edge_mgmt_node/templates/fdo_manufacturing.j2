@@ -10,9 +10,9 @@ public_key_store_driver:
     path: /etc/fdo/stores/manufacturer_keys
 bind: 0.0.0.0:{{ fdo_manufacturing_port | default('8080') }}
 rendezvous_info:
-- ip_address: {{ fdo_redezvous_ip | default('127.0.0.1') }}
-  device_port: {{ fdo_redezvous_port | default('8082') }}
-  owner_port: {{ fdo_owner_port | default('8081') }}
+- ip_address: {{ fdo_rendezvous_ip | default(ansible_host) }}
+  device_port: {{ fdo_rendezvous_port | default('8082') }}
+  owner_port: {{ fdo_rendezvous_port | default('8082') }}
   protocol: http
 protocols:
   plain_di: false

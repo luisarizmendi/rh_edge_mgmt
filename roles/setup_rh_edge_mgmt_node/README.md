@@ -185,7 +185,7 @@ Once the role finishes (you might need to wait a little bit after the role compl
 * Cockpit: 9090
 * Gitea: 3000
 * FDO Manufacturing server: 18080
-* FDO Redezvous server: 18082
+* FDO Rendezvous server: 18082
 * FDO Owner server: 18081
 * FDO Service Info server: 18083
 

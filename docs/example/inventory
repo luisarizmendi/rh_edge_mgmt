@@ -1,8 +1,0 @@
----
-all:
-  hosts:
-    edge_management:
-      #ansible_host: 192.168.122.60
-      ansible_host: 52.50.136.66
-      ansible_port: 22
-      ansible_user: admin

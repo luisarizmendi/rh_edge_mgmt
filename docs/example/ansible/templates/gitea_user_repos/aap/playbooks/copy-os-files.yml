@@ -1,0 +1,84 @@
+
+{% raw %}
+---
+- name: Clone GitHub Repository and Copy Files
+  hosts:
+    - all
+  gather_facts: no
+
+  vars:
+    local_clone_path: "/tmp/repo_clone"
+    target_path: "/etc"
+    inotify_wait_file: "/root/inotify-wait"
+
+  tasks:
+    - name: Remove the local clone
+      file:
+        path: "{{ local_clone_path }}"
+        state: absent
+
+
+    - name: Create temp directory
+      file:
+        path: "{{ local_clone_path }}"
+        state: directory
+
+
+    - name: Clone repo 
+      ansible.builtin.shell:            
+        cmd: "git clone http://{{  git_user }}:'{{ git_password }}'@{{ git_repo_url }} {{ local_clone_path }}"
+
+    - name: Set template path
+      set_fact:
+        _template_src_path: "{{ local_clone_path }}/{{ env }}/{{ path_prefix }}/{{ path }}"
+
+    - name: Find template files
+      ansible.builtin.find:
+        paths: "{{ _template_path }}"
+        patterns: "*"
+        recurse: yes
+        hidden: true            
+        file_type: file 
+      register: _template_files
+
+    - name: "Debug _template_files"
+      debug:
+        var: _template_files
+
+    - name: Crop template file paths
+      set_fact:
+        _template_files_crop: "{{ _template_files.files | map(attribute='path') | map('regex_replace', '^' + _template_src_path + '/?', '') | list }}"
+
+    - name: Extract template directories
+      set_fact:
+        _template_directories: "{{ _template_files_crop | map('dirname') | unique | list }}"
+
+
+    - name: "Debug _template_files_crop"
+      debug:
+        var: _template_files_crop
+
+    - name: "Debug _template_directories"
+      debug:
+        var: _template_directories
+
+
+    - name: Copy template files to admin repos
+      ansible.builtin.template:
+        src: "{{ _template_src_path }}/{{ item }}"
+        dest: "{{ _template_dst_path | default('/') }}/{{ item }}"
+      loop: "{{ _template_files_crop }}"
+
+    
+    - name: Remove the local clone
+      file:
+        path: "{{ local_clone_path }}"
+        state: absent
+
+      # So it does run the workflow again when a new change happens
+    - name: Remove inotify wait
+      file:
+        path: "{{ inotify_wait_file }}"
+        state: absent
+
+{% endraw %}

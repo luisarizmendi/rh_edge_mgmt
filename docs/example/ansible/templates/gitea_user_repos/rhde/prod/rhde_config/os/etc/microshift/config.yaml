@@ -1,0 +1,18 @@
+dns:
+  baseDomain: $(hostname -I | awk '{print $1}').nip.io
+network:
+  clusterNetwork:
+    - 10.42.0.0/16
+  serviceNetwork:
+    - 10.43.0.0/16
+  serviceNodePortRange: 30000-32767
+node:
+  hostnameOverride: "edge-$(ip addr | grep $(nmcli con show | grep -v UUID | head -n 1 | awk '{print $1}') -A 1 | grep link | awk '{print $2}' | sed 's/://g')"
+  nodeIP: "$(nmcli conn show $(nmcli con show | grep -v UUID | head -n 1 | awk '{print $1}') | grep ip_address | awk '{print $4}')"
+apiServer:
+  subjectAltNames: 
+    - microshift.lablocal
+    - microshift.$(hostname -I | awk '{print $1}').nip.io
+    - $(hostname -I | awk '{print $1}')
+debugging:
+  logLevel: "Normal"

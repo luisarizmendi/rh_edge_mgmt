@@ -32,6 +32,7 @@
     - syslinux
     - isomd5sum
     - lorax
+    - butane
 
 - name: Download RHEL ISO
   when: rhel_iso_download is defined and rhel_iso_download != False

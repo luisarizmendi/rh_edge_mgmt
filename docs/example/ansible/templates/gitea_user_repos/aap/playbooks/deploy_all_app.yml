@@ -1,0 +1,104 @@
+{% raw %}
+---
+- name: Deploy All APPs configured in Gitea
+  hosts: all
+  gather_facts: false
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+    controller_validate_certs: false
+    controller_configuration_credentials_secure_logging: false
+  tasks:
+
+    - name: set fact when needed
+      ansible.builtin.set_fact:
+        resource_state: present
+      when:
+        - resource_state is not defined
+
+    - name: Set _device_inventory based on env
+      set_fact:
+        _device_inventory: "{{ 'Edge Devices ' + env.capitalize() if env in ['test', 'dev'] else 'Edge Devices' }}"
+    
+    - name: Display _device_inventory variable
+      debug:
+        var: _device_inventory
+
+    - name: Extract gitea_base_url from app_definition_repo
+      delegate_to: localhost
+      set_fact:
+        gitea_base_url: "{{ app_definition_repo | regex_replace('(https?://[^/]+)/.*', '\\1') }}"
+
+    - name: Extract gitea_owner, gitea_repo, gitea_branch, and apps_path from app_definition_repo
+      delegate_to: localhost
+      set_fact:
+        gitea_owner: "{{ app_definition_repo | regex_replace('.*/([^/]+)/([^/]+)/src/branch/main.*', '\\1') }}"
+        gitea_repo: "{{ app_definition_repo | regex_replace('.*/([^/]+)/([^/]+)/src/branch/main.*', '\\2') }}"
+        gitea_branch: "{{ app_definition_repo | regex_replace('.*/([^/]+)/([^/]+)/src/branch/([^/]+).*', '\\3') }}"
+        apps_path: "{{ app_definition_repo | regex_replace('.*/src/branch/main/(.*)', '\\1') }}"
+
+    - name: Fetch file paths from Gitea API using username and password
+      delegate_to: localhost
+      uri:
+        url: "{{ gitea_base_url }}/api/v1/repos/{{ gitea_owner }}/{{ gitea_repo }}/git/trees/{{ gitea_branch }}?recursive=1"
+        method: GET
+        headers:
+          Authorization: "Basic {{ (gitea_username + ':' + gitea_password) | b64encode }}"
+          return_content: yes
+      register: gitea_response
+
+
+    - name: Display gitea_response
+      delegate_to: localhost
+        debug:
+          var: gitea_response
+
+    - name: Extract file paths
+      delegate_to: localhost
+      set_fact:
+        file_paths: "{{ gitea_response.json.tree | map(attribute='path') | list }}"
+
+    - name: Display file_paths
+      delegate_to: localhost
+        debug:
+          var: file_paths
+
+
+
+
+## Microshift Manifest
+
+    - name: Deploy Microshift APPs
+      when: deploy_app_microshift | default(true)
+      block:
+
+        - name: set host facts
+          ansible.builtin.set_fact:
+            controller_launch_jobs:
+              - name: "Microshift APP Deploy - Manifest"
+                inventory: "{{ _device_inventory }}"
+                organization: "{% endraw %}{{ gitea_user_name }}{{ user_number }}{% raw %} Organization"
+                credentials: "Device Credentials"
+                extra_vars:
+                  git_repo_url: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}{% endraw %}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
+                  git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
+                  git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
+                  path_prefix: "rhde_config"
+                  env: prod
+                  path: "microshift/manifest"
+
+        - name: Run the Job Template
+          ansible.builtin.include_role:
+            name: redhat_cop.controller_configuration.job_launch
+
+
+
+## Podman Quadlet
+
+
+
+## Microshift Helm
+# Done manually during the demo
+
+
+
+

@@ -50,7 +50,7 @@
         state: started
         enabled: yes
 
-- name: Install FDO Redezvous server
+- name: Install FDO Rendezvous server
   become: true
   block:
     - name: Install required packages
@@ -58,7 +58,7 @@
         name: "fdo-rendezvous-server"
         state: present
 
-    - name: Create the Redezvous server config file
+    - name: Create the Rendezvous server config file
       template:
         src: ../templates/fdo_rendezvous.j2
         dest: /etc/fdo/rendezvous-server.conf.d/rendezvous-server.yml
