@@ -12,67 +12,65 @@
     inotify_wait_file: "/root/inotify-wait"
 
   tasks:
-    - name: Remove the local clone
-      file:
-        path: "{{ local_clone_path }}"
-        state: absent
+    - name: Get the templates
+      delegate_to: localhost
+      block:
+        - name: Remove the local clone
+          file:
+            path: "{{ local_clone_path }}-{{ ansible_host }}"
+            state: absent
 
 
-    - name: Create temp directory
+        - name: Create temp directory
+          file:
+            path: "{{ local_clone_path }}-{{ ansible_host }}"
+            state: directory
+
+
+        - name: Clone repo 
+          ansible.builtin.shell:            
+            cmd: "git clone http://{{  git_user }}:'{{ git_password }}'@{{ git_repo_url }} {{ local_clone_path }}-{{ ansible_host }}"
+
+        - name: Set template path
+          set_fact:
+            _template_src_path: "{{ local_clone_path }}-{{ ansible_host }}/{{ env }}/{{ path_prefix }}/{{ path }}"
+
+        - name: Find template files
+          ansible.builtin.find:
+            paths: "{{ _template_src_path }}"
+            patterns: "*"
+            recurse: yes
+            hidden: true            
+            file_type: file 
+          register: _template_files
+
+        - name: Crop template file paths
+          set_fact:
+            _template_files_crop: "{{ _template_files.files | map(attribute='path') | map('regex_replace', '^' + _template_src_path + '/?', '') | list }}"
+
+        - name: Extract template directories
+          set_fact:
+            _template_directories: "{{ _template_files_crop | map('dirname') | unique | list }}"
+
+
+    - name: Be sure that the directories exist
       file:
-        path: "{{ local_clone_path }}"
+        path: "{{ item }}"
         state: directory
-
-
-    - name: Clone repo 
-      ansible.builtin.shell:            
-        cmd: "git clone http://{{  git_user }}:'{{ git_password }}'@{{ git_repo_url }} {{ local_clone_path }}"
-
-    - name: Set template path
-      set_fact:
-        _template_src_path: "{{ local_clone_path }}/{{ env }}/{{ path_prefix }}/{{ path }}"
-
-    - name: Find template files
-      ansible.builtin.find:
-        paths: "{{ _template_path }}"
-        patterns: "*"
-        recurse: yes
-        hidden: true            
-        file_type: file 
-      register: _template_files
-
-    - name: "Debug _template_files"
-      debug:
-        var: _template_files
-
-    - name: Crop template file paths
-      set_fact:
-        _template_files_crop: "{{ _template_files.files | map(attribute='path') | map('regex_replace', '^' + _template_src_path + '/?', '') | list }}"
-
-    - name: Extract template directories
-      set_fact:
-        _template_directories: "{{ _template_files_crop | map('dirname') | unique | list }}"
-
-
-    - name: "Debug _template_files_crop"
-      debug:
-        var: _template_files_crop
-
-    - name: "Debug _template_directories"
-      debug:
-        var: _template_directories
+      loop: "{{ _template_directories }}"
 
 
     - name: Copy template files to admin repos
       ansible.builtin.template:
         src: "{{ _template_src_path }}/{{ item }}"
-        dest: "{{ _template_dst_path | default('/') }}/{{ item }}"
+        dest: "/{{ item }}"
       loop: "{{ _template_files_crop }}"
 
     
     - name: Remove the local clone
+      delegate_to: localhost
       file:
-        path: "{{ local_clone_path }}"
+        path: "{{ local_clone_path }}-{{ ansible_host }}"
         state: absent
 
       # So it does run the workflow again when a new change happens
