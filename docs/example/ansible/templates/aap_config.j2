@@ -260,10 +260,9 @@ controller_templates:
     become_enabled: true
     ask_variables_on_launch: true
     extra_vars: 
-        script_url: "{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
+        script_url: "{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde/raw/branch/main/prod/rhde_config/scripts/onboarding.sh"
         git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
         git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
-
 
   - name: Create Quadlet APP
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
@@ -417,25 +416,13 @@ controller_workflows:
       - identifier: Initial Device Configuration
         unified_job_template: Initial Device Configuration
         success_nodes:
-          - Copy config files
-      - identifier: Copy config files
-        unified_job_template: Copy config files
-        success_nodes:
-          - Run Script from Gitea
-      - identifier: Run Script from Gitea
-        unified_job_template: Run Script from Gitea
-        success_nodes:
-          - Reboot device
-      - identifier: Reboot device
-        unified_job_template: Reboot device
-        success_nodes:
-          - Deploy all APPs
-      - identifier: Deploy all APPs
-        unified_job_template: Deploy all APPs
-        success_nodes:
           - Remove Host from Onboarding Inventory
       - identifier: Remove Host from Onboarding Inventory
         unified_job_template: Remove Host from Onboarding Inventory
+        success_nodes:
+          - Configure Edge Device
+      - identifier: Configure Edge Device
+        unified_job_template: Configure Edge Device
 
 
   - name: New Edge Device Image
@@ -471,6 +458,18 @@ controller_workflows:
     simplified_workflow_nodes:
       - identifier: Copy config files
         unified_job_template: Copy config files
+        success_nodes:
+          - Run Script from Gitea
+      - identifier: Run Script from Gitea
+        unified_job_template: Run Script from Gitea
+        success_nodes:
+          - Reboot device
+      - identifier: Reboot device
+        unified_job_template: Reboot device
+        success_nodes:
+          - Deploy all APPs
+      - identifier: Deploy all APPs
+        unified_job_template: Deploy all APPs
     webhook_service: github
 
 

@@ -87,7 +87,8 @@ fi
 JSON="{\
 \"ip_address\": \"\$IP_ADDRESS\", \
 \"user\": \"\$USER\", \
-\"mac_address\": \"\$MAC_ADDRESS\" \
+\"mac_address\": \"\$MAC_ADDRESS\", \
+\"env\": \"prod\" \
 }"
 
 /usr/bin/curl -H 'Content-Type: application/json' --data "\$JSON" http://{{ eda_ip | default(ansible_host) }}:{{ eda_webhook_port | default('5000') }}
