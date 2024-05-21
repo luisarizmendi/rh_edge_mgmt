@@ -8,26 +8,25 @@
       - name: Local Tasks
         delegate_to: localhost
         block:
-          - name: Extract gitea_base_url from manifest_repo
+          - name: Extract gitea_base_url from git_repo_url
             delegate_to: localhost
             set_fact:
-              gitea_base_url: "{{ manifest_repo | regex_replace('(https?://[^/]+)/.*', '\\1') }}"
+              gitea_base_url: "{{ git_repo_url | regex_replace('(https?://[^/]+)/.*', '\\1') }}"
 
-          - name: Extract gitea_owner, gitea_repo, gitea_branch, and manifest_path from manifest_repo
+          - name: Extract gitea_repo, gitea_branch, and manifest_path
             delegate_to: localhost
             set_fact:
-              gitea_owner: "{{ manifest_repo | regex_replace('.*/([^/]+)/([^/]+)/src/branch/main.*', '\\1') }}"
-              gitea_repo: "{{ manifest_repo | regex_replace('.*/([^/]+)/([^/]+)/src/branch/main.*', '\\2') }}"
-              gitea_branch: "{{ manifest_repo | regex_replace('.*/([^/]+)/([^/]+)/src/branch/([^/]+).*', '\\3') }}"
-              manifest_path: "{{ manifest_repo | regex_replace('.*/src/branch/main/(.*)', '\\1') }}"
+              gitea_repo: "{{ git_repo_url.split('/')[-1] }}"
+              gitea_branch: "{{ gitea_branch | default('main') }}"
+              manifest_path: "{{ env }}/{{ path_prefix }}/{{ path }}"
 
           - name: Fetch file paths from Gitea API using username and password
             delegate_to: localhost
             uri:
-              url: "{{ gitea_base_url }}/api/v1/repos/{{ gitea_owner }}/{{ gitea_repo }}/git/trees/{{ gitea_branch }}?recursive=1"
+              url: "{{ gitea_base_url }}/api/v1/repos/{{ git_user }}/{{ gitea_repo }}/git/trees/{{ gitea_branch }}?recursive=1"
               method: GET
               headers:
-                Authorization: "Basic {{ (gitea_username + ':' + gitea_password) | b64encode }}"
+                Authorization: "Basic {{ (git_user + ':' + git_password) | b64encode }}"
               return_content: yes
             register: gitea_response
 
@@ -44,14 +43,14 @@
           - name: Construct base Git repository URL for raw files
             delegate_to: localhost
             set_fact:
-              base_raw_url: "{{ manifest_repo | regex_replace('/src/branch/main/.*', '/raw/branch/main/') }}"
+              base_raw_url: "{{ git_repo_url }}/raw/branch/main/"
 
           - name: Prefix filtered file paths with base raw URL
             delegate_to: localhost
             set_fact:
               filtered_file_paths_with_prefix: "{{ filtered_file_paths | map('regex_replace', '^(.*)$', base_raw_url + '\\1') | list }}"
 
-          - name: Display filtered file paths with prefix
+          - name: Display manifests
             delegate_to: localhost
             debug:
               var: filtered_file_paths_with_prefix
@@ -68,7 +67,7 @@
         community.kubernetes.k8s:
           kubeconfig: "/files/{{ inventory_hostname }}/kubeconfig"  
           state: present
-          definition: "{{ lookup('ansible.builtin.url', item,{% endraw %} username='{{  gitea_user_name }}{{ user_number  }}', password='{{ gitea_user_password }}{{ user_number  }}', force_basic_auth='True' ) {% raw %}  | regex_replace(',','\\n') }}"
+          definition: "{{ lookup('ansible.builtin.url', item, username='{{  git_user  }}', password='{{ git_password }}', force_basic_auth='True' )  | regex_replace(',','\\n') }}"
         loop: "{{ filtered_file_paths_with_prefix }}"
         loop_control:
           loop_var: item

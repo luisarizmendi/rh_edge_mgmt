@@ -241,11 +241,11 @@ controller_templates:
     become_enabled: true
     ask_variables_on_launch: true
     extra_vars: 
-        git_repo_url: "{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
+        git_repo_url: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
         git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
         git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
         path_prefix: "rhde_config"
-        env: prod
+        env: "prod"
         path: "os"
 
   - name: Run Script from Gitea
@@ -264,9 +264,10 @@ controller_templates:
         git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
         git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
 
-  - name: Create Quadlet APP
+  - name: Podman Quadlet APPs Deploy
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
     inventory: Edge Devices
+    ask_inventory_on_launch: true
     project: Device Edge Codebase
     playbook: playbooks/create_quadlet.yml
     credentials:
@@ -275,17 +276,18 @@ controller_templates:
     become_enabled: true
     ask_variables_on_launch: true
     extra_vars: 
-        git_repo_url: "{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
+        git_repo_url: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
         git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
         git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
         path_prefix: "rhde_config"
-        env: prod
-        path: "podman/quadlet"
+        env: "prod"
+        path: "apps/podman/quadlet"
 
 
   - name: Microshift APP Update image tag
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
     inventory: Edge Devices
+    ask_inventory_on_launch: true
     project: Device Edge Codebase
     playbook: playbooks/update_app_microshift.yml
     credentials:
@@ -303,6 +305,7 @@ controller_templates:
   - name: Microshift APP Deploy - oc CLI
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
     inventory: Edge Devices
+    ask_inventory_on_launch: true
     project: Device Edge Codebase
     playbook: playbooks/deploy_app_microshift_oc.yml
     credentials:
@@ -314,9 +317,10 @@ controller_templates:
         manifest: http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde/raw/branch/main/prod/rhde_config/apps/microshift/manifest/motioneye/app_motioneye-microshift.yml
 
 
-  - name: Microshift APP Deploy - Manifest
+  - name: Microshift APPs Deploy - Manifest
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
     inventory: Edge Devices
+    ask_inventory_on_launch: true
     project: Device Edge Codebase
     playbook: playbooks/deploy_app_microshift_manifest.yml
     credentials:
@@ -325,17 +329,18 @@ controller_templates:
     become_enabled: true
     ask_variables_on_launch: true
     extra_vars: 
-        git_repo_url: "{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
+        git_repo_url: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
         git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
         git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
         path_prefix: "rhde_config"
-        env: prod
-        path: "microshift/manifest"
+        env: "prod"
+        path: "apps/microshift/manifest"
 
 
-  - name: Microshift APP Deploy - Helm
+  - name: Microshift APPs Deploy - Helm
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
     inventory: Edge Devices
+    ask_inventory_on_launch: true
     project: Device Edge Codebase
     playbook: playbooks/deploy_app_microshift_helm.yml
     credentials:
@@ -344,14 +349,17 @@ controller_templates:
     become_enabled: true
     ask_variables_on_launch: true
     extra_vars: 
-        helm_repo: https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/main/packages
-        helm_var_file: http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde/raw/branch/main/prod/rhde_config/apps/microshift/helm/wordpress/app_helm_wordpress_vars.yml
-        helm_chart_name: wordpress
-        release_namespace: "wordpress"
+        git_repo_url: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
+        git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
+        git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
+        path_prefix: "rhde_config"
+        env: "prod"
+        path: "apps/microshift/helm"
 
   - name: Run command
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
     inventory: Edge Devices
+    ask_inventory_on_launch: true
     project: Device Edge Codebase
     playbook: playbooks/run-command.yml
     credentials:
@@ -361,26 +369,6 @@ controller_templates:
     ask_variables_on_launch: true
     extra_vars: 
         command_to_execute: date
-
-
-  - name: Deploy all APPs
-    organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
-    inventory: Edge Devices
-    project: Device Edge Codebase
-    playbook: playbooks/deploy_all_app.yml
-    credentials:
-      - Device Credentials
-    execution_environment: Device Edge Execution Environment
-    become_enabled: true
-    ask_variables_on_launch: true
-    extra_vars:
-      app_definition_repo: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
-      env: prod
-      path_prefix: "rhde_config"
-      path_microshift_manifests: "apps/microshift/manifest"
-      path_microshift_helm: "apps/microshift/helm"
-      path_podman_quadlet: "apps/podman/quadlet"
-      path_podman_script: "apps/podman/script"
 
 
 
@@ -398,6 +386,7 @@ controller_templates:
 
 
 controller_workflows:
+
   - name: Provision Edge Device
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
     state: present
@@ -467,9 +456,17 @@ controller_workflows:
       - identifier: Reboot device
         unified_job_template: Reboot device
         success_nodes:
-          - Deploy all APPs
-      - identifier: Deploy all APPs
-        unified_job_template: Deploy all APPs
+          - Podman Quadlet APPs Deploy
+      - identifier: Podman Quadlet APPs Deploy
+        unified_job_template: Podman Quadlet APPs Deploy
+        success_nodes:
+          - Microshift APPs Deploy - Manifest
+      - identifier: Microshift APPs Deploy - Manifest
+        unified_job_template: Microshift APPs Deploy - Manifest
+        success_nodes:
+          - Microshift APPs Deploy - Helm
+      - identifier: Microshift APPs Deploy - Helm
+        unified_job_template: Microshift APPs Deploy - Helm
     webhook_service: github
 
 

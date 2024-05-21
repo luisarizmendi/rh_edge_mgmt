@@ -1,5 +1,6 @@
  #!/bin/bash
 
+set -x 
 
 # create systemd user directories for rootless services, timers, and sockets
 mkdir -p /var/home/{{ rhde_user_name }}/.config/systemd/user/default.target.wants

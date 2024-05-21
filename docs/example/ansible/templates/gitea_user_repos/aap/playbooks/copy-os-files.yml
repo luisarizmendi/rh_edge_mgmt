@@ -26,10 +26,18 @@
             path: "{{ local_clone_path }}-{{ ansible_host }}"
             state: directory
 
+        - name: Extract protocol from git_repo_url
+          set_fact:
+            git_repo_url_http: "{{ git_repo_url | regex_search('^(http|https)') | default('') }}"
+
+        - name: Remove protocol from git_repo_url
+          set_fact:
+            git_repo_url_nohttp: "{{ git_repo_url | regex_replace('^(http|https)://', '') }}"
+    
 
         - name: Clone repo 
           ansible.builtin.shell:            
-            cmd: "git clone http://{{  git_user }}:'{{ git_password }}'@{{ git_repo_url }} {{ local_clone_path }}-{{ ansible_host }}"
+            cmd: "git clone {{ git_repo_url_http }}://{{  git_user }}:'{{ git_password }}'@{{ git_repo_url_nohttp }} {{ local_clone_path }}-{{ ansible_host }}"
 
         - name: Set template path
           set_fact:

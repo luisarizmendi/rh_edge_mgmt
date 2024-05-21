@@ -7,25 +7,49 @@
 
   vars:
     local_clone_path: "/tmp/repo_clone"
-    target_path: "/etc/containers/systemd"
+    _target_path: "/etc/containers/systemd"
   tasks:
     - name: Remove the local clone
       file:
-        path: "{{ local_clone_path }}"
+        path: "{{ local_clone_path }}-{{ ansible_host }}"
         state: absent
+
+    - name: Create temp directory
+      file:
+        path: "{{ local_clone_path }}-{{ ansible_host }}"
+        state: directory
+
+    - name: Extract protocol from git_repo_url
+      set_fact:
+        git_repo_url_http: "{{ git_repo_url | regex_search('^(http|https)') | default('') }}"
+
+    - name: Remove protocol from git_repo_url
+      set_fact:
+        git_repo_url_nohttp: "{{ git_repo_url | regex_replace('^(http|https)://', '') }}"
+    
+
     - name: Clone repo 
       ansible.builtin.shell:            
-        cmd: "git clone http://{{ git_user }}:'{{ git_password }}'@{{ git_repo_url }} {{ local_clone_path }}"
-       
+        cmd: "git clone {{ git_repo_url_http }}://{{  git_user }}:'{{ git_password }}'@{{ git_repo_url_nohttp }} {{ local_clone_path }}-{{ ansible_host }}"
+
+
+    - name: Find all files in the source directory
+      find:
+        paths: "{{ local_clone_path }}/{{ env }}/{{ path_prefix }}/{{ path }}"
+        recurse: yes
+        file_type: file
+      register: found_files
+
     - name: Copy files to the target host
       copy:
-        src: "{{ local_clone_path }}/{{ path_prefix }}/{{ env }}/{{ path }}"
-        dest: "{{ target_path }}"
+        src: "{{ item.path }}"
+        dest: "{{ _target_path }}/{{ item.path | basename }}"
         remote_src: yes
+      with_items: "{{ found_files.files }}"
 
     - name: Remove the local clone
       file:
-        path: "{{ local_clone_path }}"
+        path: "{{ local_clone_path }}-{{ ansible_host }}"
         state: absent
 
 
