@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch /etc for file changes and send a webhook
+
+[Service]
+ExecStart=/usr/local/bin/watch_etc.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

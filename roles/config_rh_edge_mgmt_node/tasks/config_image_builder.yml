@@ -1,0 +1,90 @@
+---
+
+- name: Check that the demo has custom rpms
+  delegate_to: localhost
+  stat:
+    path: "{{ image_builder_custom_rpm_files | default('../files/custom-rpms') }}"
+  register: dir_status
+
+- name: Run Custom RPM tasks
+  when: dir_status.stat.exists
+  become: true
+  block:
+
+    - name: Find files
+      delegate_to: localhost
+      ansible.builtin.find:
+        paths: "{{ image_builder_custom_rpm_files }}"
+        patterns: "*"
+        recurse: yes
+        hidden: true            
+        file_type: file 
+      register: _custom_rpm_paths
+
+    - name: Get file paths
+      set_fact:
+        _custom_rpm_filenames: "{{ _custom_rpm_paths.files | map(attribute='path')  | list }}"
+
+    - name: List all SPEC files
+      set_fact:
+        _custom_rpm_spec_files: "{{ _custom_rpm_filenames | select('match', '^' + image_builder_custom_rpm_files + '/.*\\.spec$', 'multiline') | list }}"
+
+    - name: List all SPEC file name crop
+      set_fact:
+        _custom_rpm_spec_files_crop: "{{ _custom_rpm_spec_files | map('basename') | list }}"
+  
+    - name: List all non-SPEC files
+      set_fact:
+        _custom_rpm_nonspec_files: "{{ _custom_rpm_filenames | reject('match', '^' + image_builder_custom_rpm_files + '/.*\\.spec$', 'multiline') | list }}"
+
+    - name: Display SPEC files
+      debug:
+        var: _custom_rpm_spec_files
+
+    - name: Display NON SPEC files
+      debug:
+        var: _custom_rpm_nonspec_files
+
+    - name: Copy RPM SPEC files to ~/rpmbuild/SPECS/
+      ignore_errors: true
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "~/rpmbuild/SPECS/"
+        force: true
+      loop: "{{ _custom_rpm_spec_files }}"
+
+    - name: Copy non-SPEC files to ~/rpmbuild/SOURCES/
+      ignore_errors: true
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "~/rpmbuild/SOURCES/"
+        force: true
+      loop: "{{_custom_rpm_nonspec_files }}"
+
+    - name: Run RPM build 
+      shell: rpmbuild -bb ~/rpmbuild/SPECS/{{ item }}
+      loop: "{{ _custom_rpm_spec_files_crop }}"
+
+    # TODO modify permissions to allow only image builder
+    - name: create local repo
+      shell: |
+        createrepo ~/rpmbuild/RPMS/
+        chmod a+rx ~
+
+    - name: Create repo-local-rpmbuild.toml
+      copy:
+        content: |
+          id = "local-rpm-build"
+          name = "RPMs build locally"
+          type = "yum-baseurl"
+          url = "file:///root/rpmbuild/RPMS"
+          check_gpg = false
+          check_ssl = false
+          system = false
+        dest: "repo-local-rpmbuild.toml"
+
+    - name: Add the local RPM repository to Image Builder sources
+      shell: "composer-cli sources add repo-local-rpmbuild.toml"
+
+    - name: Refresh repo
+      shell: createrepo --update /root/rpmbuild/RPMS

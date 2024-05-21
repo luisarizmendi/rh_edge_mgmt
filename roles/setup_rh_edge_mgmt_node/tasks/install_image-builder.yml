@@ -33,6 +33,16 @@
     - isomd5sum
     - lorax
     - butane
+    - rpmdevtools
+    - rpmlint
+    - yum-utils
+    - createrepo
+
+
+- name: Initiate the rpm build tree
+  become: true
+  shell: rpmdev-setuptree
+
 
 - name: Download RHEL ISO
   when: rhel_iso_download is defined and rhel_iso_download != False
@@ -79,7 +89,7 @@
 
 - name: Prepare Image Builder for Microshift
   become: true
-  when: microshift | default(false)
+  when: microshift | default(true)
   block:
     - name: Create rhocp-{{ microshift_release }}.toml configuration file
       copy:
@@ -114,7 +124,7 @@
         - "/tmp/fast-datapath.toml"
 
     - name: Microshift offline
-      when: microshift_get_offline_images | default(false)
+      when: microshift_get_offline_images | default(true)
       block:
           - name: Enable OCP repo on the host for Microshift
             community.general.rhsm_repository:
@@ -189,7 +199,7 @@
       become: true
       when: pull_secret | default(false)
       block:
-        - name: Include secrets file with pull-secret if microshift_embedded_images is true
+        - name: Include secrets file with pull-secret 
           include_vars:
             file: "../vars/secrets.yml"
 
@@ -214,4 +224,6 @@
           systemd:
             name: osbuild-worker@1
             state: restarted
+ 
+
  

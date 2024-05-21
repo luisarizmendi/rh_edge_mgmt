@@ -14,6 +14,7 @@
       vars:
         image_builder_admin_name: admin
         image_builder_admin_password: R3dh4t1!
+        image_builder_custom_rpm_files:  "../files/custom-rpms"
         gitea_admin_repos_template: ../templates/gitea_admin_repos
         gitea_user_repos_template: ../templates/gitea_user_repos
         gitea_user_count: 5

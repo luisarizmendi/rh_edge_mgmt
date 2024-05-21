@@ -1,6 +1,5 @@
 ---
 helm_repo: "https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/main/packages"
-helm_parameters_file: "app_helm_wordpress_paramenters.yml"
 helm_var_file: "app_helm_wordpress_vars.yml"
 helm_chart_name: "wordpress"
 release_namespace: "wordpress"
