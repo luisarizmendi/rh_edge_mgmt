@@ -37,6 +37,18 @@
       set_fact:
         _custom_rpm_nonspec_files: "{{ _custom_rpm_filenames | reject('match', '^' + image_builder_custom_rpm_files + '/.*\\.spec$', 'multiline') | list }}"
 
+    - name: Set binary extensions
+      set_fact:
+        binary_extensions: "{{ binary_extensions | default(['exe', 'bin', 'dll', 'so', 'gz', 'tar']) }}"
+
+    - name: Separate binary files
+      set_fact:
+        _custom_rpm_nonspec_file_bin: "{{ _custom_rpm_nonspec_files | select('search', '\\.(' + binary_extensions | join('|') + ')$') | list }}"
+
+    - name: Separate non-binary files
+      set_fact:
+        _custom_rpm_nonspec_file_nonbin: "{{ _custom_rpm_nonspec_files | reject('search', '\\.(' + binary_extensions | join('|') + ')$') | list }}"
+
     - name: Display SPEC files
       debug:
         var: _custom_rpm_spec_files
@@ -47,19 +59,27 @@
 
     - name: Copy RPM SPEC files to ~/rpmbuild/SPECS/
       ignore_errors: true
-      ansible.builtin.copy:
+      ansible.builtin.template:
         src: "{{ item }}"
         dest: "~/rpmbuild/SPECS/"
         force: true
       loop: "{{ _custom_rpm_spec_files }}"
 
-    - name: Copy non-SPEC files to ~/rpmbuild/SOURCES/
+    - name: Copy non-SPEC non-binary files to ~/rpmbuild/SOURCES/
+      ignore_errors: true
+      ansible.builtin.template:
+        src: "{{ item }}"
+        dest: "~/rpmbuild/SOURCES/"
+        force: true
+      loop: "{{_custom_rpm_nonspec_file_nonbin }}"
+
+    - name: Copy non-SPEC binary files to ~/rpmbuild/SOURCES/
       ignore_errors: true
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: "~/rpmbuild/SOURCES/"
         force: true
-      loop: "{{_custom_rpm_nonspec_files }}"
+      loop: "{{_custom_rpm_nonspec_file_bin }}"
 
     - name: Run RPM build 
       shell: rpmbuild -bb ~/rpmbuild/SPECS/{{ item }}

@@ -6,10 +6,8 @@ License:    BSD
 Source0:    watch_etc.py
 Source1:    watch-etc.service
 Source2:    inotify-wait
-Requires(pre): shadow-utils
 Requires: python3-inotify
 Requires: python3-pip
-BuildRequires: systemd-rpm-macros
 ExclusiveArch: x86_64
 
 %description
@@ -26,25 +24,21 @@ Checks ETC files are modified and if so send a webhook to AAP
 %prep
 cp %{S:0} watch_etc.py
 cp %{S:1} watch-etc.service
-cp %{S:2} inotify-wait
 
 %build
 
 %install
-install -m 0644 -D watch_etc.py %{buildroot}/usr/local/bin/watch_etc.py
+install -m 0755 -D watch_etc.py %{buildroot}/usr/bin/watch_etc.py
 install -m 0644 -D watch-etc.service %{buildroot}/etc/systemd/system/watch-etc.service
-install -m 0644 -D inotify-wait %{buildroot}/root/inotify-wait
-
 
 %files
-%attr(0644, root, root) /usr/local/bin/watch_etc.py
+%attr(0755, root, root) /usr/bin/watch_etc.py
 %attr(0644, root, root) /etc/systemd/system/watch-etc.service
-%attr(0644, root, root) /root/inotify-wait
-
 
 %post
 # Set SELinux context for the files
-restorecon -R $RPM_BUILD_ROOT/etc/systemd/system 
+restorecon -R /etc/systemd/system/watch-etc.service
+restorecon -R /usr/bin/watch_etc.py
 systemctl enable watch-etc.service || :
 systemctl start watch-etc.service || :
 systemctl daemon-reload || :

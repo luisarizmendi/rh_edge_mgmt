@@ -7,6 +7,9 @@
     - name: Install management node
       ansible.builtin.include_role:
         name: luisarizmendi.rh_edge_mgmt.setup_rh_edge_mgmt_node
+      vars:
+        microshift: true
+        microshift_release: 4.15
 
     - name: Config management node
       ansible.builtin.include_role:

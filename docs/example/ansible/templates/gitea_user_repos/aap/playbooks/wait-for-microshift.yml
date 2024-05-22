@@ -1,0 +1,46 @@
+{% raw %}
+---
+- name: Wait until all pods are in Ready state
+  hosts: all
+  tasks:
+    - name: Check the status of all pods
+      shell: >
+        oc --kubeconfig /var/lib/microshift/resources/kubeadmin/kubeconfig get pods --all-namespaces
+      register: pod_status
+      changed_when: false
+
+    - name: Parse pod status
+      set_fact:
+        pods_status: "{{ pod_status.stdout_lines[1:] | map('split') | map('extract', 2) | list }}"
+    
+    - name: Initialize loop control variable
+      set_fact:
+        all_pods_ready: "{{ pods_status | select('search', 'Running|Completed') | list | length == pods_status | length }}"
+
+    - name: Wait until all pods are in Ready state
+      until: all_pods_ready
+      retries: 100
+      delay: 10
+      shell: >
+        oc --kubeconfig /var/lib/microshift/resources/kubeadmin/kubeconfig get pods --all-namespaces
+      register: pod_status
+      changed_when: false
+      when: not all_pods_ready
+      notify:
+          - Parse pod status again
+
+      - name: Parse pod status again
+        set_fact:
+          pods_status: "{{ pod_status.stdout_lines[1:] | map('split') | map('extract', 2) | list }}"
+          all_pods_ready: "{{ pods_status | select('search', 'Running|Completed') | list | length == pods_status | length }}"
+
+    handlers:
+      - name: Parse pod status again
+        set_fact:
+          pods_status: "{{ pod_status.stdout_lines[1:] | map('split') | map('extract', 2) | list }}"
+          all_pods_ready: "{{ pods_status | select('search', 'Running|Completed') | list | length == pods_status | length }}"
+
+    - name: Done
+      debug:
+        msg: All Pods are Ready!
+{% endraw %}

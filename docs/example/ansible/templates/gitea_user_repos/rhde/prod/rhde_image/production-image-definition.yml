@@ -7,8 +7,7 @@ builder_skip_repo: true
 builder_compose_pkgs:
   - libreswan
   - microshift
-  - microshift-greenboot
-  - NetworkManager-wifi
+  - microshift-olm
   - firewalld
   - openshift-clients
   - podman
@@ -19,8 +18,8 @@ builder_compose_pkgs:
   - "slirp4netns"
   - "net-tools"
   - "git"
-  - "python3-pip"
-  - "python3-inotify"
+  - "inotify-gitops"
+  - workload-manifests
 builder_compose_customizations:
   user:
     name: "{{ rhde_user_name }}"
@@ -31,4 +30,4 @@ builder_compose_customizations:
   services:
     enabled: ["microshift"]
   firewall.services:
-    enabled: ["80/tcp", "443/tcp", "6443/tcp"]
+    enabled: ["22/tcp", "80/tcp", "443/tcp", "6443/tcp", "5353:udp", "30000-32767:tcp", "30000-32767:udp"]

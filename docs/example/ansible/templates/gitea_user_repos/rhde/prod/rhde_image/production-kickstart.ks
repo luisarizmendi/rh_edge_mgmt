@@ -10,7 +10,7 @@ part /boot --fstype=xfs --asprimary --size=800
 part swap --fstype=swap --recommended
 part pv.01 --grow
 volgroup rhel pv.01
-logvol / --vgname=rhel --fstype=xfs --percent=90 --name=root
+logvol / --vgname=rhel --fstype=xfs --percent=80 --name=root
 reboot
 graphical
 user --name=ansible --groups=wheel --password='{{  gitea_user_password }}{{ user_number  }}'
@@ -114,5 +114,9 @@ EOF
 
 systemctl daemon-reload
 systemctl enable aap-auto-registration.service
+
+
+# Stop config updates with inotify at the start:
+touch /root/inotify-wait
 
 %end

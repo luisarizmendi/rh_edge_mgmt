@@ -1,3 +1,4 @@
+{% raw %}
 #!/usr/bin/env python3
 
 import inotify.adapters
@@ -11,9 +12,13 @@ time.sleep(15)
 # Define the directory to monitor
 DIRECTORY = '/etc'
 
-# Define your webhook URL
-WEBHOOK_URL = "http://{{ eda_ip | default(ansible_host) }}:{{ eda_webhook_port | default('5000') }}"
-{% raw %}
+# Retrieve the eda_ip and eda_webhook_port environment variables
+eda_ip = os.environ.get('eda_ip')
+eda_webhook_port = os.environ.get('eda_port')
+git_user= os.environ.get('git_user')
+
+WEBHOOK_URL = "http://{}:{}".format(eda_ip, eda_webhook_port)
+
 # Function to send a webhook with JSON data
 def send_webhook(path, filename, event_type, student, inventory):
     json_data = {
@@ -56,7 +61,7 @@ if conn_name and MAC_ADDRESS:
 
 # Initialize the inotify watcher
 i = inotify.adapters.InotifyTree(DIRECTORY)
-{% endraw %}
+
 for event in i.event_gen(yield_nones=False):
       (_, type_names, path, filename) = event
       # Check the file extension and skip unwanted extensions
@@ -69,8 +74,9 @@ for event in i.event_gen(yield_nones=False):
             # Check if the "/root/inotify-wait" file exists
             if not inotify_wait_exists():
                 # Send a webhook notification with JSON data
-                send_webhook(path, filename, type_names, {{ gitea_user_name }}{{ user_number }}, inventory )
+                send_webhook(path, filename, type_names, git_user, inventory )
                 # Create the "/root/inotify-wait" file
                 open('/root/inotify-wait', 'w').close()
 
 i.remove_watch(DIRECTORY)
+{% endraw %}
