@@ -19,6 +19,13 @@
         path: "{{ local_clone_path }}-{{ ansible_host }}"
         state: directory
 
+    - name: Create {{ _target_path }} directory
+      become: true
+      file:
+        path: "{{ _target_path }}"
+        state: directory
+
+
     - name: Extract protocol from git_repo_url
       set_fact:
         git_repo_url_http: "{{ git_repo_url | regex_search('^(http|https)') | default('') }}"
@@ -35,7 +42,7 @@
 
     - name: Find all files in the source directory
       find:
-        paths: "{{ local_clone_path }}/{{ env }}/{{ path_prefix }}/{{ path }}"
+        paths: "{{ local_clone_path }}-{{ ansible_host }}/{{ env }}/{{ path_prefix }}/{{ path }}"
         recurse: yes
         file_type: file
       register: found_files
