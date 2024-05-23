@@ -8,6 +8,7 @@ builder_compose_pkgs:
   - libreswan
   - microshift
   - microshift-olm
+  - wait-microshift
   - firewalld
   - openshift-clients
   - podman
@@ -18,7 +19,7 @@ builder_compose_pkgs:
   - "slirp4netns"
   - "net-tools"
   - "git"
-  - "inotify-gitops"
+  - inotify-gitops
   - workload-manifests
 builder_compose_customizations:
   user:

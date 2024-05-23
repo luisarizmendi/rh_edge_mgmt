@@ -1,11 +1,13 @@
 {% raw %}
 #!/usr/bin/env python3
 
-import inotify.adapters
 import requests
 import os
 import subprocess
 import time
+import sys
+import inotify.adapters
+
 
 time.sleep(15)
 
@@ -39,7 +41,7 @@ def inotify_wait_exists():
     return os.path.exists('/root/inotify-wait')
 
 try:
-    conn_name = subprocess.check_output("nmcli con show | grep -v UUID | head -n 1 | awk '{{print \$1}}'", shell=True)
+    conn_name = subprocess.check_output("nmcli con show | grep -v UUID | head -n 1 | awk '{{print $1}}'", shell=True)
     conn_name = conn_name.decode("utf-8").strip()
 except subprocess.CalledProcessError as e:
     print(f"Error running the first shell command: {e}")
@@ -49,7 +51,7 @@ except subprocess.CalledProcessError as e:
 if conn_name:
     # Run the second shell command to get the MAC address
     try:
-        MAC_ADDRESS = subprocess.check_output(f"ip addr | grep {conn_name} -A 1 | grep link | awk '{{print \$2}}' | sed 's/://g'", shell=True)
+        MAC_ADDRESS = subprocess.check_output(f"ip addr | grep {conn_name} -A 1 | grep link | awk '{{print $2}}' | sed 's/://g'", shell=True)
         MAC_ADDRESS = MAC_ADDRESS.decode("utf-8").strip()
     except subprocess.CalledProcessError as e:
         print(f"Error running the second shell command: {e}")

@@ -23,16 +23,19 @@ cp %{S:0} workload-manifests.tar.gz
 %build
 
 %install
-mkdir -p %{buildroot}/var/lib/microshift/manifests/
-tar -xzf workload-manifests.tar.gz -C %{buildroot}/var/lib/microshift/manifests/
-
+mkdir -p %{buildroot}/tmp/manifests/
+tar -xzf workload-manifests.tar.gz -C %{buildroot}/tmp/manifests/
+mkdir -p %{buildroot}/usr/lib/microshift/manifests
+# Copy manifest files from /root/manifests
+cp -pr %{buildroot}/tmp/manifests/* %{buildroot}/usr/lib/microshift/manifests/
+rm -rf %{buildroot}/tmp/manifests/
 
 %files
-%attr(0644, root, root) /var/lib/microshift/manifests/**
+%attr(0755, root, root) /usr/lib/microshift/manifests/**
 
 %post
 # Set SELinux context for the files
-restorecon -R /var/lib/microshift
+restorecon -R /usr/lib/microshift/manifests/
 
 %changelog
 

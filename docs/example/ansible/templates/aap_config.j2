@@ -412,13 +412,17 @@ controller_workflows:
         unified_job_template: Test Device Connectivity
         success_nodes:
           - Initial Device Configuration
+        failure_nodes:
+          - Remove Host from Onboarding Inventory
       - identifier: Initial Device Configuration
         unified_job_template: Initial Device Configuration
         success_nodes:
           - Configure Edge Device
+        failure_nodes:
+          - Remove Host from Onboarding Inventory
       - identifier: Configure Edge Device
         unified_job_template: Configure Edge Device
-        success_nodes:
+        always_nodes:
           - Remove Host from Onboarding Inventory
       - identifier: Remove Host from Onboarding Inventory
         unified_job_template: Remove Host from Onboarding Inventory

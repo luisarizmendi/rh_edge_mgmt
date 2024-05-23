@@ -6,8 +6,8 @@ License:    BSD
 Source0:    watch_etc.py
 Source1:    watch-etc.service
 Source2:    inotify-wait
-Requires: python3-inotify
-Requires: python3-pip
+Requires:   python3-inotify
+Requires:   python3-pip
 ExclusiveArch: x86_64
 
 %description
@@ -42,6 +42,5 @@ restorecon -R /usr/bin/watch_etc.py
 systemctl enable watch-etc.service || :
 systemctl start watch-etc.service || :
 systemctl daemon-reload || :
-
 
 %changelog

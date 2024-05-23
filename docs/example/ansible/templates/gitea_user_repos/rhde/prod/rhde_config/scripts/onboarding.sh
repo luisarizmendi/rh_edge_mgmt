@@ -2,6 +2,20 @@
 
 set -x 
 
+######### MICROSHIFT
+# Configure the firewall with the mandatory rules for MicroShift
+firewall-cmd --permanent --zone=trusted --add-source=10.42.0.0/16
+firewall-cmd --permanent --zone=trusted --add-source=169.254.169.1
+
+# Reload firewall configuration to apply changes
+firewall-cmd --reload
+
+
+
+######### EXAMPLE APP DEPLOYMENT WITH SCRIPT
+
+## Rootless Podman APPs, one Serverless, with podman autoupdate 
+
 # create systemd user directories for rootless services, timers, and sockets
 mkdir -p /var/home/{{ rhde_user_name }}/.config/systemd/user/default.target.wants
 mkdir -p /var/home/{{ rhde_user_name }}/.config/systemd/user/sockets.target.wants
