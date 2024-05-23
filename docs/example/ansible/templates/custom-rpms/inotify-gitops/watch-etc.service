@@ -2,7 +2,7 @@
 Description=Watch /etc for file changes and send a webhook
 
 [Service]
-ExecStart=pip install inotify ; python3 /usr/bin/watch_etc.py
+ExecStart=python3 /usr/bin/watch_etc.py
 Restart=always
 
 [Install]

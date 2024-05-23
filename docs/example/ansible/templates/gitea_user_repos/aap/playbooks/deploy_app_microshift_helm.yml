@@ -5,148 +5,52 @@
   gather_facts: false
 
   tasks:
-      - name: Local Tasks
-        delegate_to: localhost
-        block:
-          - name: Extract gitea_base_url from git_repo_url
-            delegate_to: localhost
-            set_fact:
-              gitea_base_url: "{{ git_repo_url | regex_replace('(https?://[^/]+)/.*', '\\1') }}"
+    - name: Download Helm script
+      delegate_to: localhost
+      get_url:
+        url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+        dest: /tmp/get-helm-3
+        mode: 0755
 
-          - name: Extract gitea_repo, gitea_branch, and manifest_path
-            delegate_to: localhost
-            set_fact:
-              gitea_repo: "{{ git_repo_url.split('/')[-1] }}"
-              gitea_branch: "{{ gitea_branch | default('main') }}"
-              manifest_path: "{{ env }}/{{ path_prefix }}/{{ path }}"
+    - name: Run Helm script
+      delegate_to: localhost
+      command: /tmp/get-helm-3
+      args:
+        creates: /usr/local/bin/helm  
 
-          - name: Fetch file paths from Gitea API using username and password
-            delegate_to: localhost
-            uri:
-              url: "{{ gitea_base_url }}/api/v1/repos/{{ git_user }}/{{ gitea_repo }}/git/trees/{{ gitea_branch }}?recursive=1"
-              method: GET
-              headers:
-                Authorization: "Basic {{ (git_user + ':' + git_password) | b64encode }}"
-              return_content: yes
-            register: gitea_response
+    - name: Fetch kubeconfig file from remote host
+      fetch:
+        src: /var/lib/microshift/resources/kubeadmin/{{  hostvars[inventory_hostname]['ansible_host'] }}/kubeconfig
+        dest: "/files/{{ inventory_hostname }}/"
+        flat: yes
 
-          - name: Extract file paths
-            delegate_to: localhost
-            set_fact:
-              file_paths: "{{ gitea_response.json.tree | map(attribute='path') | list }}"
-
-          - name: Filter file paths by manifest_path and extension (yaml or yml)
-            delegate_to: localhost
-            set_fact:
-              filtered_file_paths: "{{ file_paths | select('match', '^' + manifest_path + '/.*\\.(yaml|yml)$', 'multiline') | list }}"
-
-          - name: Construct base Git repository URL for raw files
-            delegate_to: localhost
-            set_fact:
-              base_raw_url: "{{ git_repo_url }}/raw/branch/main/"
-
-          - name: Prefix filtered file paths with base raw URL
-            delegate_to: localhost
-            set_fact:
-              filtered_file_paths_with_prefix: "{{ filtered_file_paths | map('regex_replace', '^(.*)$', base_raw_url + '\\1') | list }}"
-
-          - name: Filter paths to get app_helm_<whatever>_descriptor.yaml
-            set_fact:
-              app_helm_descriptors: "{{ filtered_file_paths_with_prefix | select('search', 'app_helm_.*_descriptor\\.(yaml|yml)$') | list }}"
+    - name: Add stable chart repo
+      delegate_to: localhost
+      community.kubernetes.helm_repository:
+        name: stable
+        repo_url: "{{ helm_repo }}"
 
 
-      - name: Run Helm
-        when: app_helm_descriptors | default([]) | length > 0
-        block:
-          - name: Download Helm script
-            delegate_to: localhost
-            get_url:
-              url: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-              dest: /tmp/get-helm-3
-              mode: 0755
+    - name: Get Helm values
+      delegate_to: localhost
+      copy:
+        content:  "{{ lookup('ansible.builtin.url', {{ helm_var_file }}, username=git_user | quote, password=git_password | quote, force_basic_auth='True' )  | regex_replace(',', '\\n') }}"
+        dest: "/files/{{ inventory_hostname }}/helm_values.yml"
 
-          - name: Run Get Helm script
-            delegate_to: localhost
-            command: /tmp/get-helm-3
-            args:
-              creates: /usr/local/bin/helm  
+    - shell: "cat /files/{{ inventory_hostname }}/helm_values.yml"
+      delegate_to: localhost
 
+    - name: Deploy latest version of the chart
+      delegate_to: localhost
+      community.kubernetes.helm:
+        kubeconfig: "/files/{{ inventory_hostname }}/kubeconfig"
+        create_namespace: true
+        name: "{{ helm_chart_name }}"
+        chart_ref: stable/{{ helm_chart_name }}
+        values_files:
+          - "/files/{{ inventory_hostname }}/helm_values.yml"
+        release_namespace: "{{ release_namespace }}"
 
-          - name: Create temp directory
-            delegate_to: localhost
-            file:
-              path: "/files/{{ inventory_hostname }}/"
-              state: directory
-
-          - name: Fetch kubeconfig file from remote host
-            become: true
-            fetch:
-              src: /var/lib/microshift/resources/kubeadmin/{{  hostvars[inventory_hostname]['ansible_host'] }}/kubeconfig
-              dest: "/files/{{ inventory_hostname }}/"
-              flat: yes
-
-
-          - name: Execute Helm per descriptor file
-            block: 
-
-            - name: Fetch descriptor files
-              uri:
-                url: "{{ item }}"
-                method: GET
-                headers:
-                  Authorization: "Basic {{ (git_user + ':' + git_password) | b64encode }}"
-                return_content: yes
-              register: descriptor_content
-              loop: "{{ app_helm_descriptors }}"
-
-            - name: Ensure descriptor_content is a list
-              set_fact:
-                descriptor_content_list: "{{ descriptor_content.results | default([]) }}"
-
-            - name: Initialize all_helm_values
-              set_fact:
-                all_helm_values: []
-
-            - name: Collect all variables from each descriptor
-              set_fact:
-                all_helm_values: "{{ all_helm_values + [descriptor_vars] }}"
-              loop: "{{ range(0, descriptor_content_list | length) | list }}"
-              vars:
-                item_index: "{{ item }}"
-                descriptor_vars: "{{ descriptor_content_list[item_index].content | from_yaml }}"
-
-            - name: Add stable chart repo for each descriptor
-              community.kubernetes.helm_repository:
-                name: stable
-                repo_url: "{{ item.helm_repo }}"
-              loop: "{{ all_helm_values }}"
-              loop_control:
-                loop_var: item
-              delegate_to: localhost
-
-            - name: Get Helm values for each descriptor
-              delegate_to: localhost
-              copy:
-                content: "{{ lookup('ansible.builtin.url', app_helm_descriptors[item_index], username=git_user, password=git_password, force_basic_auth=True) | regex_replace(',', '\n') }}"
-                dest: "/files/{{ inventory_hostname }}/helm_values_{{ item_index + 1 }}.yml"
-              loop: "{{ range(0, all_helm_values | length) | list }}"
-              vars:
-                item_index: "{{ item }}"
-
-            - name: Deploy latest version of the chart for each descriptor
-              community.kubernetes.helm:
-                kubeconfig: "/files/{{ inventory_hostname }}/kubeconfig"
-                create_namespace: true
-                name: "{{ helm_item.helm_chart_name }}"
-                chart_ref: stable/{{ helm_item.helm_chart_name }}
-                values_files:
-                  - "/files/{{ inventory_hostname }}/helm_values_{{ item_index + 1 }}.yml"
-                release_namespace: "{{ helm_item.release_namespace }}"
-              loop: "{{ range(0, all_helm_values | length) | list }}"
-              vars:
-                item_index: "{{ item }}"
-                helm_item: "{{ all_helm_values[item_index] }}"
-              delegate_to: localhost
 {% endraw %}
 
 

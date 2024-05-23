@@ -349,12 +349,12 @@ controller_templates:
     become_enabled: true
     ask_variables_on_launch: true
     extra_vars: 
-        git_repo_url: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde"
+        helm_repo: "https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/main/packages"
+        helm_var_file: "http://{{ gitea_ip | default(ansible_host) }}:{{ gitea_port | default('3000') }}/{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}/rhde/raw/branch/main/prod/rhde_config/apps/microshift/helm/wordpress/app_helm_wordpress_vars.yml"
         git_user: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %}"
         git_password: "{{ aap_user_password }}{% raw %}{{ user_number }}{% endraw %}"
-        path_prefix: "rhde_config"
-        env: "prod"
-        path: "apps/microshift/helm"
+        helm_chart_name: "wordpress"
+        release_namespace: "wordpress"
 
   - name: Run command
     organization: "{{ aap_user_name }}{% raw %}{{ user_number }}{% endraw %} Organization"
@@ -481,10 +481,6 @@ controller_workflows:
           - Microshift APPs Deploy - Manifest
       - identifier: Microshift APPs Deploy - Manifest
         unified_job_template: Microshift APPs Deploy - Manifest
-        success_nodes:
-          - Microshift APPs Deploy - Helm
-      - identifier: Microshift APPs Deploy - Helm
-        unified_job_template: Microshift APPs Deploy - Helm
     webhook_service: github
 
 

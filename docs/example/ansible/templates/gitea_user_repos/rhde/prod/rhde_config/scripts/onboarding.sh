@@ -2,16 +2,26 @@
 
 set -x 
 
+### Add environment 
+echo "running_env=prod" >> /etc/environment
+
+
 ######### MICROSHIFT
 # Configure the firewall with the mandatory rules for MicroShift
 firewall-cmd --permanent --zone=trusted --add-source=10.42.0.0/16
 firewall-cmd --permanent --zone=trusted --add-source=169.254.169.1
-firewall-cmd --zone=public --add-port=80/tcp
-firewall-cmd --zone=public --add-port=443/tcp
-firewall-cmd --zone=public --add-port=6443/tcp
+firewall-cmd --permanent --zone=public --add-port=80/tcp
+firewall-cmd --permanent --zone=public --add-port=443/tcp
+firewall-cmd --permanent --zone=public --add-port=6443/tcp
 
 # Reload firewall configuration to apply changes
 firewall-cmd --reload
+
+
+
+######### required for inotify-gitops
+# TODO: I'm not sure why this is not included when installed inotify-pip as part of the requisites of the RPM package
+pip install inotify
 
 
 

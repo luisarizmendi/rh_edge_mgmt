@@ -18,17 +18,20 @@ DIRECTORY = '/etc'
 eda_ip = os.environ.get('eda_ip')
 eda_webhook_port = os.environ.get('eda_port')
 git_user= os.environ.get('git_user')
+running_env= os.environ.get('running_env')
+
 
 WEBHOOK_URL = "http://{}:{}".format(eda_ip, eda_webhook_port)
 
 # Function to send a webhook with JSON data
-def send_webhook(path, filename, event_type, student, inventory):
+def send_webhook(path, filename, event_type, user, inventory, running_env):
     json_data = {
-        "student": student,
+        "user": user,
         "inventory": inventory,
         "path": path,
         "file_changed": filename,
-        "event_type": event_type
+        "event_type": event_type,
+        "running_env": running_env
     }
 
     headers = {'Content-Type': 'application/json'}
@@ -76,7 +79,7 @@ for event in i.event_gen(yield_nones=False):
             # Check if the "/root/inotify-wait" file exists
             if not inotify_wait_exists():
                 # Send a webhook notification with JSON data
-                send_webhook(path, filename, type_names, git_user, inventory )
+                send_webhook(path, filename, type_names, git_user, inventory, running_env )
                 # Create the "/root/inotify-wait" file
                 open('/root/inotify-wait', 'w').close()
 

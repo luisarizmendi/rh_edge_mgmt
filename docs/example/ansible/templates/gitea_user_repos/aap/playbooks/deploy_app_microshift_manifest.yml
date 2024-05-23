@@ -67,7 +67,7 @@
         community.kubernetes.k8s:
           kubeconfig: "/files/{{ inventory_hostname }}/kubeconfig"  
           state: present
-          definition: "{{ lookup('ansible.builtin.url', item, username='{{  git_user  }}', password='{{ git_password }}', force_basic_auth='True' )  | regex_replace(',','\\n') }}"
+          definition: "{{ lookup('ansible.builtin.url', item, username=git_user | quote, password=git_password | quote, force_basic_auth='True' )  | regex_replace(',', '\\n') }}"
         loop: "{{ filtered_file_paths_with_prefix }}"
         loop_control:
           loop_var: item
