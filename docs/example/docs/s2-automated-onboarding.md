@@ -41,6 +41,10 @@ Once everyting is ready, go ahead with the device onboarding:
 
     - "Test Device Connectivity": This is a quick check that the AAP can SSH to the recently added system into the inventory. Remember that if you include the `libreswan` package as part of the image, a VPN connection will be setup between the Edge Device and the Edge Manager server, this connection will be used to reach out to the device from the server, so with this playbookw you are also testing the VPN link in that case. 
 
+  >**Note**
+  >
+  > The VPN is prepared to support only one single edge device behind the same public IP at this moment, bear that in mind if you need to deploy more than one device in your demo.
+
     - Initial Device Configuration: Here is where the "real" onboarding automation is made. In our example we are only doing one thing with our systems: changing the host name from `localhost` to `edge-<system mac address with no : characters>`
 
 

@@ -138,6 +138,11 @@ For `production-kickstart.ks`:
 2
 * It will create a configuration file for VPN (if the libreswan package was installed as part of the image). AS part of this config you can see that there is a file containing the secrets...this is a great opportunity to show the benefit of using FIDO FDO instead of Kickstarts for onboarding the devices, since with FDO there will be no secrets delivered to the systems until they are authenticated with an external server (also preventing someone to steal the device and have access to those secrets). 
 
+  >**Note**
+  >
+  > The VPN is prepared to support only one single edge device behind the same public IP at this moment, bear that in mind if you need to deploy more than one device in your demo.
+
+
 * It creates a script for AAP auto-registration, so the new device is included in the AAP inventory directly without human intervention 
 
 

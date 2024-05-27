@@ -72,7 +72,9 @@ Internet Connection with access to Red Hat sites, GitHub, Slack and Quay.io.
 
 The lab architecture has been designed so you can deploy it where you don't have access to the network to re-configure NAT entries, that means that potentially you could install the edge manager server in, let's say AWS, and the edge device in your local environment/venue network without having to re-configure the router. This is done (for demo pruposes, do not use at production please) using a VPN tunnel between the local and the remote server, so be sure that outgoing IPSec connections are allowed in the Venue firewall if using this setup.
 
-
+  >**Note**
+  >
+  > The VPN is prepared to support only one single edge device behind the same public IP at this moment, bear that in mind if you need to deploy more than one device in your demo.
 
 ## Pre-recorded video
 
