@@ -26,6 +26,7 @@ if rpm -q libreswan &> /dev/null; then
 
 conn_name=$(nmcli con show | grep -v UUID | head -n 1 | awk '{print $1}')
 IP_ADDRESS=$(nmcli conn show $conn_name | grep ip_address | awk '{print $4}')
+MAC_ADDRESS=$(ip addr | grep $conn_name -A 1 | grep link | awk '{print $2}' | sed 's/://g')
 IP_AAP_PRIVATE={{ aap_ip_private }}
 IP_AAP_PUBLIC={{ eda_ip | default(ansible_host) }}
 
@@ -41,7 +42,7 @@ conn %default
     keyexchange=ike
     ikev2=yes
 
-conn edgedevices
+conn $MAC_ADDRESS
     encapsulation=yes
     left=${IP_AAP_PUBLIC}
     leftid=${IP_AAP_PRIVATE}
