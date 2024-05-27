@@ -6,7 +6,7 @@ image_builder_admin_name: admin
 image_builder_admin_password: R3dh4t1!
 rhde_user_name: admin
 rhde_user_password: R3dh4t1!
-image_builder_custom_rpm_files: "../files/custom-rpms"
+image_builder_custom_rpm_files: "../templates/custom-rpms"
 
 ### FDO
 include_fdo: false
