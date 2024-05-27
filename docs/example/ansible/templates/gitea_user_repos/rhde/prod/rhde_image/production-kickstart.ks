@@ -46,7 +46,7 @@ conn edgedevices
     left=${IP_AAP_PUBLIC}
     leftid=${IP_AAP_PRIVATE}
     right=${IP_ADDRESS}
-    leftid=${IP_ADDRESS}
+    rightid=${IP_ADDRESS}
     authby=secret
     auto=start
     ike=3des-sha1,aes-sha1

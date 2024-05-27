@@ -3,6 +3,7 @@
 set -x 
 
 ### Add environment 
+echo "" >> /etc/environment
 echo "running_env=prod" >> /etc/environment
 
 

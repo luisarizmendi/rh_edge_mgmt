@@ -456,7 +456,7 @@ controller_workflows:
     state: present
     allow_simultaneous: true
     survey_enabled: false
-    inventory: Edge Devices
+    inventory: Onboarding
     ask_inventory_on_launch: true
     simplified_workflow_nodes:
       - identifier: Copy config files
@@ -470,13 +470,13 @@ controller_workflows:
       - identifier: Reboot device
         unified_job_template: Reboot device
         success_nodes:
-          -  Wait for OpenShift to be UP
-      - identifier:  Wait for OpenShift to be UP
-        unified_job_template:  Wait for OpenShift to be UP
-        success_nodes:
           - Podman Quadlet APPs Deploy
       - identifier: Podman Quadlet APPs Deploy
         unified_job_template: Podman Quadlet APPs Deploy
+        success_nodes:
+          -  Wait for OpenShift to be UP
+      - identifier:  Wait for OpenShift to be UP
+        unified_job_template:  Wait for OpenShift to be UP
         success_nodes:
           - Microshift APPs Deploy - Manifest
       - identifier: Microshift APPs Deploy - Manifest

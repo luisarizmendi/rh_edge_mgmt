@@ -8,6 +8,18 @@ import time
 import sys
 import inotify.adapters
 
+def source_environment(file_path):
+    """Read and set environment variables from a file."""
+    with open(file_path) as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
+
+# Source environment variables from /etc/environment
+source_environment('/etc/environment')
+
+print(f"Waiting 15 secs...")
 
 time.sleep(15)
 
@@ -20,8 +32,14 @@ eda_webhook_port = os.environ.get('eda_port')
 git_user= os.environ.get('git_user')
 running_env= os.environ.get('running_env')
 
-
 WEBHOOK_URL = "http://{}:{}".format(eda_ip, eda_webhook_port)
+
+# Debug prints
+print(f"eda_ip: {eda_ip}")
+print(f"eda_webhook_port: {eda_webhook_port}")
+print(f"git_user: {git_user}")
+print(f"running_env: {running_env}")
+print(f"WEBHOOK_URL: {WEBHOOK_URL}")
 
 # Function to send a webhook with JSON data
 def send_webhook(path, filename, event_type, user, inventory, running_env):
