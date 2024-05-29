@@ -3,6 +3,7 @@ test.yml
 *pull-secret*
 
 # example
+secrets.yml
 !**/.keep
 aap.tar.gz
 manifest.zip
