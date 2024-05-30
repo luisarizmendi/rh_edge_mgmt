@@ -93,8 +93,13 @@ When you find a reference to a path during this lab deploymend guide it will con
 You need to install the [Ansible Collection](https://github.com/luisarizmendi/rh_edge_mgmt) on your laptop:
 
 ```shell
-ansible-galaxy collection install luisarizmendi.rh_edge_mgmt
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --upgrade
 ```
+
+  >**Note**
+  >
+  > Even if you have already installed the collection, it is a good idea to run the command above so the collection playbooks are updated if there has been any change since you downloaded it for the first time.
+
 
 The Collection [setup_rh_edge_mgmt_node role](https://github.com/luisarizmendi/rh_edge_mgmt/tree/main/roles/setup_rh_edge_mgmt_node) and [config_rh_edge_mgmt_node role](https://github.com/luisarizmendi/rh_edge_mgmt/tree/main/roles/config_rh_edge_mgmt_node) have some pre-requisites. This is the summary (all for installing the services):
 
@@ -125,6 +130,24 @@ Save apart your `manifest.zip` file in `files` directory (a different location c
   >
   > If you want to check the contents of the ZIP file you will see a `consumer_export.zip` file and a `signature` inside.
 
+If you use the default path you should have the `manifest.zip` file in this path:
+
+```bash
+├── ansible
+│   ├── files
+│       └── manifest.zip
+│   ├── inventory
+│   ├── playbooks
+...
+│   ├── templates
+...
+│   └── vars
+...
+├── docs
+...
+└── README.md
+
+```
 
 ### Get your Red Hat Customer Portal Offline Token
 
@@ -168,6 +191,25 @@ pull_secret: '<your pull secret>'
 offline_token: '<your offline token>'
 red_hat_user: <your RHN user>
 red_hat_password: <your RHN password>
+```
+
+If you use the default path you should have the `secrets.yml` file in this path:
+
+```bash
+├── ansible
+│   ├── files
+...
+│   ├── inventory
+│   ├── playbooks
+...
+│   ├── templates
+...
+│   └── vars
+│       └── secrets.yml
+├── docs
+...
+└── README.md
+
 ```
 
 ### Prepare Ansible inventory and variables

@@ -8,7 +8,6 @@
 
 - name: Run Custom RPM tasks
   when: dir_status.stat.exists
-  become: true
   block:
 
     - name: Find files
@@ -59,6 +58,7 @@
 
     - name: Copy RPM SPEC files to ~/rpmbuild/SPECS/
       ignore_errors: true
+      become: true
       ansible.builtin.template:
         src: "{{ item }}"
         dest: "~/rpmbuild/SPECS/"
@@ -67,6 +67,7 @@
 
     - name: Copy non-SPEC non-binary files to ~/rpmbuild/SOURCES/
       ignore_errors: true
+      become: true
       ansible.builtin.template:
         src: "{{ item }}"
         dest: "~/rpmbuild/SOURCES/"
@@ -75,23 +76,27 @@
 
     - name: Copy non-SPEC binary files to ~/rpmbuild/SOURCES/
       ignore_errors: true
+      become: true
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: "~/rpmbuild/SOURCES/"
         force: true
       loop: "{{_custom_rpm_nonspec_file_bin }}"
 
-    - name: Run RPM build 
+    - name: Run RPM build
+      become: true
       shell: rpmbuild -bb ~/rpmbuild/SPECS/{{ item }}
       loop: "{{ _custom_rpm_spec_files_crop }}"
 
     # TODO modify permissions to allow only image builder
     - name: create local repo
+      become: true
       shell: |
         createrepo ~/rpmbuild/RPMS/
         chmod a+rx ~
 
     - name: Create repo-local-rpmbuild.toml
+      become: true
       copy:
         content: |
           id = "local-rpm-build"
@@ -104,7 +109,9 @@
         dest: "repo-local-rpmbuild.toml"
 
     - name: Add the local RPM repository to Image Builder sources
+      become: true
       shell: "composer-cli sources add repo-local-rpmbuild.toml"
 
     - name: Refresh repo
+      become: true
       shell: createrepo --update /root/rpmbuild/RPMS
