@@ -97,8 +97,13 @@ This Ansible Role was created to be used as a simple way of configuring the foll
 You need to install the [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/luisarizmendi/rh_edge_mgmt/) on your laptop:
 
 ```shell
-ansible-galaxy collection install luisarizmendi.rh_edge_mgmt
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --upgrade
 ```
+
+  >**Note**
+  >
+  > Even if you have already installed the collection, it is a good idea to run the command above so the collection playbooks are updated if there has been any change since you downloaded it for the first time.
+
 
 ### Hardware requirements
 
