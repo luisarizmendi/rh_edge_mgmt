@@ -1,10 +1,12 @@
 # Section 5 - Bulletproof system upgrades
 
-In this section we will modify the image that we created in Section 1 by removing and adding packages to the definition.
+In this section we will modify the image that we created in Section 1 by removing and adding packages to the definition. We will demonstrate how the system will realize that we made "a mistake" excluding those packages and how it will rollback to the previous image version were those packages were present. 
 
   >**Note**
   >
-  > We will remove (intentionally) some of the packages that are, in fact, needed to make the manual overwrite prevention system that we have seen in Section 3 work (such as `python3-inotify`). We will do it in order to demonstrate how the system will realize that we made a mistake excluding those packages and how it will rolback to the previous image version were those packages were present.   
+  > We will remove (intentionally) some of the packages that are, in fact, needed. For example, you can prevent the manual overwrite prevention system that we have seen in Section 3 work if you remove the package `python3-inotify`, or if you are using the "Kiosk Mode", then you can disrupt the service in the console if you remove the package `kiosk-mode`. 
+  
+  
 
 1. Open a Terminal en the edge system and run `watch "rpm-ostree upgrade --preview"` command as root to verify that there are no system updates available and to watch changes while we publish the new image in the following steps. Keep this CLI Terminal visible.
 
@@ -17,7 +19,7 @@ Note: --check and --preview may be unreliable.  See https://github.com/coreos/rp
 No updates available
 ```
 
-2. Open `rhde/prod/rhde_image/production-image-definition.yaml` in Gitea and review the `builder_compose_pkgs` packages. Remove the custom rpm `inotify-gitops` package (which will remove also the `python3-inotify` dependancy) and include an additional one (ie. `zsh`), so we are simulating that someone wants to add a package but, when he reviews the image definition, he thinks that the `inotify-gitops` package can be safely removed (which is not the case) too.
+2. Open `rhde/prod/rhde_image/production-image-definition.yaml` in Gitea and review the `builder_compose_pkgs` packages. Remove the custom rpm `inotify-gitops` package (which will remove also the `python3-inotify` dependancy) and, if you want, the `kiosk-mode` package too. You can include an additional package (ie. `zsh`) to the definition, so we are simulating that someone wants to add a package but, when he reviews the image definition, he thinks that the `inotify-gitops` package can be safely removed (which is not the case) too.
 
 ```bash
 ---
