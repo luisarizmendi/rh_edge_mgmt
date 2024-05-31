@@ -50,6 +50,9 @@ conn $MAC_ADDRESS
     rightid=${IP_AAP_PRIVATE}
     authby=secret
     auto=start
+    dpdaction=restart
+    dpddelay=10
+    dpdtimeout=30
     ike=3des-sha1,aes-sha1
     esp=aes-sha2_512+sha2_256
     leftsubnets={192.168.0.0/16 172.16.0.0/12}
@@ -65,19 +68,17 @@ EOF
 systemctl enable ipsec
 systemctl start ipsec 
 
-ipsec auto --up edgedevices
-
-
 
 # Add masquerade rule for the private IP
-firewall-offline-cmd  --permanent --zone=public --add-masquerade
+firewall-offline-cmd  --zone=public --add-masquerade
 
 # Add forwarding rules using direct rules
-firewall-offline-cmd  --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -s ${IP_AAP_PRIVATE}/32 -d 192.168.0.0/16 -j MASQUERADE
-firewall-offline-cmd  --permanent --direct --add-rule ipv4 nat POSTROUTING 0 -s ${IP_AAP_PRIVATE}/32 -d 172.16.0.0/12 -j MASQUERADE
-firewall-offline-cmd  --permanent --direct --add-rule ipv4 filter FORWARD 0 -s ${IP_AAP_PRIVATE}/32 -d 192.168.0.0/16 -j ACCEPT
-firewall-offline-cmd  --permanent --direct --add-rule ipv4 filter FORWARD 0 -s ${IP_AAP_PRIVATE}/32 -d 172.16.0.0/12 -j ACCEPT
+firewall-offline-cmd   --direct --add-rule ipv4 nat POSTROUTING 0 -s ${IP_AAP_PRIVATE}/32 -d 192.168.0.0/16 -j MASQUERADE
+firewall-offline-cmd   --direct --add-rule ipv4 nat POSTROUTING 0 -s ${IP_AAP_PRIVATE}/32 -d 172.16.0.0/12 -j MASQUERADE
+firewall-offline-cmd   --direct --add-rule ipv4 filter FORWARD 0 -s ${IP_AAP_PRIVATE}/32 -d 192.168.0.0/16 -j ACCEPT
+firewall-offline-cmd   --direct --add-rule ipv4 filter FORWARD 0 -s ${IP_AAP_PRIVATE}/32 -d 172.16.0.0/12 -j ACCEPT
 
+firewall-offline-cmd --runtime-to-permanent
 
 fi
 
@@ -102,7 +103,7 @@ fi
 JSON="{\
 \"ip_address\": \"\$IP_ADDRESS\", \
 \"user\": \"\$USER\", \
-\"mac_address\": \"\$MAC_ADDRESS\", \
+\"nodename\": \"edge-\$MAC_ADDRESS\", \
 \"env\": \"prod\" \
 }"
 
