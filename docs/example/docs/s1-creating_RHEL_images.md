@@ -40,6 +40,10 @@ We need to update the image definition, we could, for example, include a new pac
 
   >**Note**
   >
+  > If you have your Ansible Automation Platform locally (instead on a remote location or public cloud) you should remove the `libreswan` package from your image so the VPN is not configured in the edge device, otherwise you could find connectivity issues trying to access AAP after the first device onboarding.
+
+  >**Note**
+  >
   > Now we will just copy the example files. We will review the contents while the image is being generated to fill that time with something useful.
 
 * Clone the repository in your laptop (use same user and password than in Gitea and AAP):
