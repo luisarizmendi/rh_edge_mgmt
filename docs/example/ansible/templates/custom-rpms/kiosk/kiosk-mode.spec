@@ -1,10 +1,10 @@
 Name:       kiosk-mode
 Version:    0.0.1
 Release:    rh1
-Summary:    Custom mode to run a RHEL workstation as kiosk
+Summary:    Custom config to run a RHEL workstation as kiosk
 License:    BSD
-Source0:    kiosk-app
-Source1:    kiosk-environment
+Source0:    user-template
+Source1:    kiosk-app
 Source2:    com.redhat.Kiosk.SampleApp.desktop
 Source3:    redhat-kiosk-sampleapp.session
 Source4:    redhat-kiosk-sampleapp.desktop
@@ -38,6 +38,7 @@ cp %{S:3} redhat-kiosk-sampleapp.session
 cp %{S:4} redhat-kiosk-sampleapp.desktop
 cp %{S:5} com.redhat.Kiosk.SampleApp.service
 cp %{S:6} session.conf
+
 
 %build
 
