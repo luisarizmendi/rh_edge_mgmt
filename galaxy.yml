@@ -58,7 +58,7 @@ dependencies:
   "redhat_cop.controller_configuration": "*"
   "infra.controller_configuration": "*"
   "infra.eda_configuration": "*"
-  "awx:awx": "*"
+  "awx.awx": "*"
 
 # The URL of the originating SCM repository
 repository: https://github.com/luisarizmendi/rh_edge_mgmt
