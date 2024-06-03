@@ -11,7 +11,7 @@ If you need a quick deployment and you don't want to expend time reading the rol
 1. You need to install the [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/luisarizmendi/rh_edge_mgmt/) on your laptop (of course you will also need `ansible` and `ansible-galaxy`)
 
 ```shell
-ansible-galaxy collection install luisarizmendi.rh_edge_mgmt
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --force-with-deps
 ```
 
 2. Clone this repo and move it into the `docs/example` directory
@@ -97,7 +97,7 @@ This Ansible Role was created to be used as a simple way of configuring the foll
 You need to install the [Ansible Collection](https://galaxy.ansible.com/ui/repo/published/luisarizmendi/rh_edge_mgmt/) on your laptop:
 
 ```shell
-ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --upgrade
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --force-with-deps
 ```
 
   >**Note**

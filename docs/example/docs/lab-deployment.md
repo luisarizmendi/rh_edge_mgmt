@@ -93,7 +93,7 @@ When you find a reference to a path during this lab deploymend guide it will con
 You need to install the [Ansible Collection](https://github.com/luisarizmendi/rh_edge_mgmt) on your laptop:
 
 ```shell
-ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --upgrade
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --force-with-deps
 ```
 
   >**Note**

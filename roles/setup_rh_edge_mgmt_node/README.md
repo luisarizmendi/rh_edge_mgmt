@@ -24,8 +24,8 @@ You need a server with RHEL 9 installed (the collection has been tested with RHE
 You need to have a couple of Collections installed on your laptop:
 
 ```bash
-ansible-galaxy collection install -f git+https://github.com/redhat-cop/infra.osbuild --upgrade
-ansible-galaxy collection install -f containers.podman --upgrade
+ansible-galaxy collection install -f git+https://github.com/redhat-cop/infra.osbuild --force-with-deps
+ansible-galaxy collection install -f containers.podman --force-with-deps
 ```
 
 ### Ansible Automation Platform Manifest
