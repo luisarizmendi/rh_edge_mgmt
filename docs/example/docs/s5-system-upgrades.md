@@ -1,5 +1,12 @@
 # Section 5 - Bulletproof system upgrades
 
+## Video
+
+[![Section 5 - Video](https://img.youtube.com/vi/m1TdoDZRJAI/0.jpg)](https://www.youtube.com/watch?v=m1TdoDZRJAI)
+
+<br><br>
+<hr style="border:2px solid gray">
+
 In this section we will modify the image that we created in Section 1 by removing and adding packages to the definition. We will demonstrate how the system will realize that we made "a mistake" excluding those packages and how it will rollback to the previous image version were those packages were present. 
 
   >**Note**
@@ -98,7 +105,7 @@ echo "python3-inotify is installed."
 
   >**Note**
   >
-  > If you deployed Microshift you will find an auto-generated required script named `40_microshift_running_check.sh` to check the Microshift status. 
+  > When you deploy Microshift additional auto-generated required script named `40_microshift_running_check.sh` is installed, but in order to minimize the time needed to run the auto-rollback use case demo, those have been removed (introducing `rm -rf /etc/greenboot/check/required.d/*microshift*` in the `onboard.sh` script), otherwise you need to wait up to 5 minutes to see Greenboot rebooting the machine. 
 
 
 5. Check "Jobs" page in AAP until the "Compose Image" Job finish. Then click the "New Edge Device Image" Workflow Job, click the "Publish Image Approval" box and finally click on "Approve" (button left) to let the workflow progress
@@ -285,6 +292,10 @@ builder_compose_customizations:
 
 
 ## TIP: Reducing the demo/workshop time by pre-creating images in advance
+
+[![Section 5 Bonus - Video](https://img.youtube.com/vi/_CVHUncDsq8/0.jpg)](https://www.youtube.com/watch?v=_CVHUncDsq8)
+
+<hr style="border:2px solid gray">
 
 Creating those two additional images takes time. If you feel that you cannot fill that time with something useful or you think you won't have time to invest on that activity you can pre-create the images thanks to a trick that was introduced in the lab when it was deployed.
 

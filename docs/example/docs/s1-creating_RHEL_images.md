@@ -1,5 +1,12 @@
 # Section 1 - Creating RHEL Images the GitOps way
 
+## Video
+
+[![Section 1 - Video](https://img.youtube.com/vi/GBNGv4zVuOY/0.jpg)](https://www.youtube.com/watch?v=GBNGv4zVuOY)
+
+<br><br>
+<hr style="border:2px solid gray">
+
 1. Open Gitea in `http://<edge-management-server-ip>:3000` and use one of the configured users/passwords (by default `user1` to `user3` are created with `password1` to `password3`).
 
   >**Note**
@@ -36,7 +43,6 @@ We need to update the image definition, we could, for example, include a new pac
   >**Note**
   >
   > Since we are just modifying a single file, we could also use the Web UI to modify the file instead of cloning and pushing the repo, but the second option is more close to what you would be doing in production.
-
 
   >**Note**
   >
@@ -139,7 +145,7 @@ The Ansible playbooks that installed the lab already enabled these repositories 
 For `production-kickstart.ks`:
 
 * The kickstart will launch the OSTree image deployment as you can see in the `ostreesetup` line at the beginning. That line points to where the OSTRee image will be published, in our case `http://<edge-management-server-ip>/user1/prod/repo`
-2
+
 * It will create a configuration file for VPN (if the libreswan package was installed as part of the image). AS part of this config you can see that there is a file containing the secrets...this is a great opportunity to show the benefit of using FIDO FDO instead of Kickstarts for onboarding the devices, since with FDO there will be no secrets delivered to the systems until they are authenticated with an external server (also preventing someone to steal the device and have access to those secrets). 
 
   >**Note**
@@ -164,6 +170,6 @@ For `production-kickstart.ks`:
 11. The "Publish Image" Job does not take as long as the image creation.
 
 
-12. Finally, you can open `http://192.168.122.2/<user>/prod/` and check the contents that have been published, including the `kickstarts` and the `repos` (which is the OSTree image generated with Image Builder) directories.
+12. Finally, you can open `http://<edge-management-server-ip>/<user>/prod/` and check the contents that have been published, including the `kickstarts` and the `repos` (which is the OSTree image generated with Image Builder) directories.
 
 
