@@ -8,3 +8,4 @@ secrets.yml
 aap.tar.gz
 manifest.zip
 microshift-embedded-images.toml
+docs/example/ansible/execution-environment/context

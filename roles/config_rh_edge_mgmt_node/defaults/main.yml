@@ -9,7 +9,8 @@ rhde_user_password: R3dh4t1!
 image_builder_custom_rpm_files: "../templates/custom-rpms"
 
 ### FDO
-include_fdo: false
+include_fdo: true
+fdo_serviceinfo_api_port: 18083
 
 ### AAP
 include_aap: true

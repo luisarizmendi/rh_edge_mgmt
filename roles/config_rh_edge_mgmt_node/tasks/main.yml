@@ -8,9 +8,9 @@
   ansible.builtin.import_tasks: config_image_builder.yml
   when: include_image_builder | default(true)
 
-#- name: import fdo tasks
-#  ansible.builtin.import_tasks: config_fdo.yml
-#  when: include_fdo | default(false)
+- name: import fdo tasks
+  ansible.builtin.import_tasks: config_fdo.yml
+  when: include_fdo | default(true)
 
 - name: import gitea tasks
   ansible.builtin.import_tasks: config_gitea.yml

@@ -4,8 +4,9 @@
 
 [![Section 4 Podman - Video](https://img.youtube.com/vi/l9k1R2mq_lc/0.jpg)](https://www.youtube.com/watch?v=l9k1R2mq_lc)
 
-<br><br>
-<hr style="border:2px solid gray">
+
+---
+
 
 In this section we will explore how you could use Podman applications using Ansible Automation Platform and Red Hat Device Edge and also how, just using Podman and Systemd, you we can obtain advanced capabilities without using Kubernetes.
 
@@ -24,10 +25,10 @@ The applications deployed with the script were included to demonstrate some of t
 
 There is a webhook configured to trigger the deployments througt EDA that deploys the Quadlet apps if you push or change content in Gitea, so let's modify the port where one of the applications is published.
 
-1. Open Gitea and show the `rhde/prod/rhde_config/apps/podman/quadlet` folder. There will be the descriptors that will be created on the edge devices. You have one preloaded: `app_fuxa_scada.container`. Open that file and show the config (mainly the image and port).
+1. Open Gitea and show the `rhde/prod/rhde_config/apps/podman/quadlet` folder. There will be the descriptors that will be created on the edge devices. You have one preloaded: `tailwind-pos.container`. Open that file and show the config (mainly the image and port).
 
 
-2. Here you have two options. First you can go into the AAP and run the Template "Create Quadlet APP" or you can change something (for example, change the port where it is published on the host, from `PublishPort=1881:1881`to `PublishPort=1882:1881`) on the descriptor on Gitea and see how EDA gets the Job launched for you. If you choose the second option remember to open first the "Jobs" page in the AAP so people can see how the Job is auto-launched. 
+2. Here you have two options. First you can go into the AAP and run the Template "Create Quadlet APP" or you can change something (for example, change the port where it is published on the host, from `PublishPort=8000:80`to `PublishPort=8001:80`) on the descriptor on Gitea and see how EDA gets the Job launched for you. If you choose the second option remember to open first the "Jobs" page in the AAP so people can see how the Job is auto-launched. This change will affect the `kiosk-demo` since it uses the application that is published in port 8000, if you want to show again the app in the `kiosk-mode` remember to rollback to port `8000`
 
   >**Note**
   >
@@ -37,13 +38,13 @@ There is a webhook configured to trigger the deployments througt EDA that deploy
 
 ```bash
 [root@edge-848bcd4d1537 ~]# podman ps
-CONTAINER ID  IMAGE                             COMMAND     CREATED         STATUS         PORTS                   NAMES
-a164ed35c012  docker.io/frangoteam/fuxa:latest  npm start   17 seconds ago  Up 17 seconds  0.0.0.0:1882->1882/tcp  systemd-app_fuxa_scada
+CONTAINER ID  IMAGE                                      COMMAND     CREATED         STATUS         PORTS                   NAMES
+a164ed35c012  quay.io/luisarizmendi/tailwind-pos:latest  npm start   17 seconds ago  Up 17 seconds  0.0.0.0:8000->80/tcp  tailwind-pos
 ```
 
 4. Show the APP by visiting `http:<edge device IP>:<configured port>`
 
-5. Change the port in Giteain the `rhde/prod/rhde_config/apps/podman/quadlet/app_fuxa_scada.container` file and see how that change is applied to the application.
+5. Change the port in Giteain the `rhde/prod/rhde_config/apps/podman/quadlet/tailwind-pos.container` file and see how that change is applied to the application.
 
 
 

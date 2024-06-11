@@ -142,11 +142,19 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: 0644
-        
+
+    - name: Create the vars file
+      template:
+        src: ../templates/aap_vars.yml
+        dest: /home/{{ ansible_user }}/aap_install/aap_vars.yml
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: 0644
+
     - name: Run AAP installer
       shell: |
         cd /home/{{ ansible_user }}/aap_install
-        ansible-playbook -i inventory ansible.containerized_installer.install > /home/{{ ansible_user }}/.aap_install.log 2>&1
+        ansible-playbook -i inventory --extra-vars "@aap_vars.yml" ansible.containerized_installer.install > /home/{{ ansible_user }}/.aap_install.log 2>&1
 
 
     - name: Check if firewalld is installed

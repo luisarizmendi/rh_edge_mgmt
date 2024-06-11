@@ -1,0 +1,2 @@
+# There is a bug in the latest image of EDA, so I included a way to fix it to certain version
+eda_image: 'eda-controller-rhel8:1.0.5'

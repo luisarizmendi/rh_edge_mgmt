@@ -9,7 +9,7 @@ trusted_device_keys_path: /etc/fdo/keys/device_ca_cert.pem
 owner_private_key_path: /etc/fdo/keys/owner_key.der
 owner_public_key_path: /etc/fdo/keys/owner_cert.pem
 bind: "0.0.0.0:{{ fdo_owner_port | default('8081') }}"
-report_to_rendezvous_endpoint_enabled: {{ report_to_rendezvous_endpoint_enabled | default('false') }}
+report_to_rendezvous_endpoint_enabled: {{ report_to_rendezvous_endpoint_enabled | default('true') }}
 service_info_api_url: "http://localhost:{{ fdo_serviceinfo_api_port | default('8083') }}/device_info"
 service_info_api_authentication:
   BearerToken:

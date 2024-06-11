@@ -1,0 +1,27 @@
+---
+- name: Configure FDO Service Info server
+  become: true
+  block:
+    - name: Copy fdo-files
+      copy:
+        src: "{{ fdo_template }}/fdo-files"
+        dest: /etc/
+        remote_src: no      
+
+    - name: Configure the Service Info server config file
+      template:
+        src: "{{ fdo_template }}/serviceinfo-api-server.yml"
+        dest: /etc/fdo/serviceinfo-api-server.conf.d/serviceinfo-api-server.yml
+        
+
+    - name: Start and enable the serviceinfo-api-server service
+      ansible.builtin.systemd:
+        name: fdo-serviceinfo-api-server.service
+        state: restarted
+        enabled: yes
+
+
+
+
+
+
