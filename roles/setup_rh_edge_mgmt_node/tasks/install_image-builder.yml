@@ -38,6 +38,7 @@
     - yum-utils
     - createrepo
     - butane
+    - tree
 
 
 - name: Initiate the rpm build tree

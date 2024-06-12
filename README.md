@@ -4,6 +4,12 @@ This Ansible Collection helps installing and configuring the following architect
 
 ![demo-arch](https://raw.githubusercontent.com/luisarizmendi/rh_edge_mgmt/main/docs/images/demo-arch.png)
 
+The VPN connection is optional, it's pre-configured and will be setup if you deploy your edge device with the `libreswan` package installed.
+
+  >**Note**
+  >
+  > In order to connect a machine in the local network to the remote node using the already pre-configured VPN, you will need to use a local subnet contained in `192.168.0.0/16` or `172.16.0.0/12`. It is *very important* that if you are deploying the edge management server locally and you are using a network in that range, that you do DON'T deploy the edge server with the VPN active (that means including the `libreswan` package in the image definition) because there will be routing issues in that case.
+  
 ## TL/DR
 
 If you need a quick deployment and you don't want to expend time reading the role documentation, try this:
