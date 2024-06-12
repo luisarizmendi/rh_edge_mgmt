@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # List of required packages
-required_packages=("kiosk-mode")
+required_packages=("kiosk-mode" "git")
 
 # Check if each package is installed
 for package in "${required_packages[@]}"; do

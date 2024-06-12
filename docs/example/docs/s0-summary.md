@@ -141,9 +141,10 @@ This is the summary of the demo steps:
     3. Show the Workflow in AAP
     4. Download the ISO from `http://<edge manager ip>/<user>/` and show the `test-ignition.ign` file
     5. Prepare your Hardware or create the VM (with UEFI boot and a TPM module included) 
-    6. Boot from the ISO. While waiting explain FDO automations with the `/etc/fdo/serviceinfo-api-server.conf.d/serviceinfo-api-server.yml` file
-    7. SSH the edge device and show that both the Ignition and FDO customizations took place. Show `journalctl -u fdo-client-linuxapp` 
-    8. Show and explain how the FDO Vouchers where used during the onboarding (in this demo with auto-approval)
+    6. Open an SSH session in the Edge Management server and run `sudo watch /etc/fdo/stores`    
+    7. Boot from the ISO. While waiting explain FDO automations with the `/etc/fdo/serviceinfo-api-server.conf.d/serviceinfo-api-server.yml` file
+    8. SSH the edge device and show that both the Ignition and FDO customizations took place. Show `journalctl -u fdo-client-linuxapp` 
+    9. Show and explain how the FDO Vouchers where used during the onboarding (in this demo with auto-approval)
 
 
 

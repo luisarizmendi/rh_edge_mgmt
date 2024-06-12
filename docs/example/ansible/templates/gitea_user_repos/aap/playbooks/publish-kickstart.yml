@@ -46,12 +46,27 @@
         download_failed: true
       when: "'Not found.' in file_content.content | b64decode"
 
-    - name: Restore context on directory
-      ansible.builtin.command: "restorecon -R /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}"
-      changed_when: true
+    - name: There is a kickstart file
       when: not download_result.failed and not download_failed
+      block:
+        - name: Restore context on directory
+          ansible.builtin.command: "restorecon -R /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}"
+          changed_when: true
+          when: not download_result.failed and not download_failed
 
-    - ansible.builtin.debug:
-        msg: "The kickstart file is published in http://{{ ansible_host }}/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ kickstart_name }}{% endraw %}"
-      when: not download_result.failed and not download_failed
+        - ansible.builtin.debug:
+            msg: "The kickstart file is published in http://{{ ansible_host }}/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ kickstart_name }}{% endraw %}"
+          when: not download_result.failed and not download_failed
+
+
+    - name: There is no kickstart file
+      when: download_result.failed or download_failed
+      block: 
+        - name: Delete empty downloaded file
+          ansible.builtin.file:
+            state: absent
+            path: /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ kickstart_name }}{% endraw %}      
+
+
+
 

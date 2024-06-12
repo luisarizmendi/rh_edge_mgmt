@@ -38,6 +38,7 @@
 
 {% endraw %}
 
+
     - name: Set a failure flag if the file content is "Not found."
       set_fact:
         download_failed: false
@@ -48,18 +49,29 @@
         download_failed: true
       when: "'Not found.' in file_content.content | b64decode"
 
-    - name: Create ignition file
+
+    - name: There is a butane file
       when: not download_result.failed and not download_failed
-      shell: |
-        butane /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ butane_name }}{% endraw %} > /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ ignition_name }}{% endraw %}
+      block:
+        - name: Create ignition file
+          shell: |
+            butane /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ butane_name }}{% endraw %} > /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ ignition_name }}{% endraw %}
+
+        - name: Restore context on directory
+          ansible.builtin.command: "restorecon -R /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}"
+          changed_when: true
+
+        - ansible.builtin.debug:
+            msg: "The ignition file is published in http://{{ ansible_host }}/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ butane_name | regex_replace('\\.bu$', '.ign') }}{% endraw %}"
+
+    - name: There is no butane file
+      when: download_result.failed or download_failed
+      block: 
+        - name: Delete empty downloaded file
+          ansible.builtin.file:
+            state: absent
+            path: /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ butane_name }}{% endraw %}       
 
 
-    - name: Restore context on directory
-      when: not download_result.failed and not download_failed
-      ansible.builtin.command: "restorecon -R /var/www/html/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}"
-      changed_when: true
 
-    - ansible.builtin.debug:
-        msg: "The ignition file is published in http://{{ ansible_host }}/{{ gitea_user_name }}{{ user_number }}/{% raw %}{{ image_environment }}{% endraw %}/{% raw %}{{ butane_name | regex_replace('\\.bu$', '.ign') }}{% endraw %}"
-      when: not download_result.failed and not download_failed
 

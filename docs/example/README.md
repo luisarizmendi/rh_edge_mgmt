@@ -42,6 +42,11 @@ This is the architecture deployed thanks to the [Ansible Collection](https://gal
 
 ![demo-arch](https://raw.githubusercontent.com/luisarizmendi/rh_edge_mgmt/main/docs/images/demo-arch.png)
 
+The VPN connection is optional, it's pre-configured and will be setup if you deploy your edge device with the `libreswan` package installed.
+
+  >**Note**
+  >
+  > In order to connect a machine in the local network to the remote node using the already pre-configured VPN, you will need to use a local subnet contained in `192.168.0.0/16` or `172.16.0.0/12`. It is *very important* that if you are deploying the edge management server locally and you are using a network in that range, that you do DON'T deploy the edge server with the VPN active (that means including the `libreswan` package in the image definition) because there will be routing issues in that case.
 
 ## Recommended Hardware
 
@@ -79,7 +84,7 @@ The lab architecture has been designed so you can deploy it where you don't have
 
   >**Note**
   >
-  > In order to connect a machine in the local network to the remote node you will need to use a local subnet contained in `192.168.0.0/16` or `172.16.0.0/12`
+  > REMEMBER: In order to connect a machine in the local network to the remote node using the already pre-configured VPN, you will need to use a local subnet contained in `192.168.0.0/16` or `172.16.0.0/12`. It is *very important* that if you are deploying the edge management server locally and you are using a network in that range, that you do DON'T deploy the edge server with the VPN active (that means including the `libreswan` package in the image definition) because there will be routing issues in that case.
 
 ## Pre-recorded video
 
@@ -370,6 +375,7 @@ At the end of the day, you will need a system that brings secret "late binding" 
 
 If you want [to know more about FDO you can read this article series](https://luisarizmendi.wordpress.com/2022/08/08/edge-computing-device-onboarding-part-i-introducing-the-challenge/).
 
+Continue with the detailed steps to demo this section:
 
 * [Secure Onboarding with FDO](docs/s6-secure-onboarding-with-fdo.md)
 

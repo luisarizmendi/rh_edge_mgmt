@@ -91,11 +91,11 @@ fi
 cat > /var/tmp/aap-auto-registration.sh <<EOF
 #!/bin/bash
 sleep 5
-conn_name=$(nmcli -t -f NAME con show | head -n 1)
-device_name=$(nmcli -t -f GENERAL.DEVICES con show "$conn_name" | head -n 1 | cut -d: -f2)
-IP_ADDRESS=$(nmcli -t -f IP4.ADDRESS con show "$conn_name" | head -n 1 | cut -d: -f2 | cut -d/ -f1)
-MAC_ADDRESS=$(nmcli -g GENERAL.HWADDR device show "$device_name" | tr -d '\\')
-MAC_ADDRESS_FORMAT=$(echo "$MAC_ADDRESS" | tr -d ':')
+conn_name=\$(nmcli -t -f NAME con show | head -n 1)
+device_name=\$(nmcli -t -f GENERAL.DEVICES con show "\$conn_name" | head -n 1 | cut -d: -f2)
+IP_ADDRESS=\$(nmcli -t -f IP4.ADDRESS con show "\$conn_name" | head -n 1 | cut -d: -f2 | cut -d/ -f1)
+MAC_ADDRESS=\$(nmcli -g GENERAL.HWADDR device show "\$device_name" | tr -d '\\')
+MAC_ADDRESS_FORMAT=\$(echo "\$MAC_ADDRESS" | tr -d ':')
 USER='{{  gitea_user_name }}{{ user_number }}'
 
 
