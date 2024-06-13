@@ -166,14 +166,19 @@
             ansible.builtin.dnf:
               name: jq
 
+          - name: Create /opt/files directory if it does not exist
+            ansible.builtin.file:
+              path:  "/opt/files"
+              state: directory
+
           - name: Clear previous Microshift images
             ansible.builtin.file:
-              path: /root/blueprint-microshift-embedded.toml
+              path: /opt/files/blueprint-microshift-embedded.toml
               state: absent
       
           - name: Extracting the Microshift images
             ansible.builtin.shell:
-              cmd: jq -r '.images | .[] | ("[[containers]]\nsource = \"" + . + "\"\n")' "./usr/share/microshift/release/release-{{ ansible_architecture }}.json" >> "/root/blueprint-microshift-embedded.toml"
+              cmd: jq -r '.images | .[] | ("[[containers]]\nsource = \"" + . + "\"\n")' "./usr/share/microshift/release/release-{{ ansible_architecture }}.json" >> "/opt/files/blueprint-microshift-embedded.toml"
 
           - name: Create ../files directory on localhost if it doesn't exist
             become: false
@@ -184,7 +189,7 @@
 
           - name: Fetch Microshift embedded images TOLM file from remote server to localhost
             ansible.builtin.fetch:
-              src: "/root/blueprint-microshift-embedded.toml"
+              src: "/opt/files/blueprint-microshift-embedded.toml"
               dest: "../files/microshift-embedded-images.toml"
               flat: yes
               validate_checksum: no
