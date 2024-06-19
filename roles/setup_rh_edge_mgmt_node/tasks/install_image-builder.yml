@@ -188,10 +188,9 @@
           - name: Extracting the Microshift images to YAML
             ansible.builtin.shell:
               cmd: |
-                jq -r '.images | .[] | .source' "./usr/share/microshift/release/release-{{ ansible_architecture }}.json" \
-                | sed 's/^/  - /' \
+                jq -r '.images | to_entries | map("  - \(.value)") | join("\n")' "./usr/share/microshift/release/release-{{ ansible_architecture }}.json" \
                 | awk 'BEGIN {print "builder_compose_containers:"} {print}' \
-                >> "/opt/files/blueprint-microshift-embedded.yaml"
+                >> "/opt/files/blueprint-microshift-embedded.toml"
 
 
           - name: Create ../files directory on localhost if it doesn't exist

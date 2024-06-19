@@ -303,6 +303,17 @@ Remember to change visibility of both 2048 and simple-http images to "public" in
 
 ## Deploy the lab
 
+First, be sure that you have the latest version of the collection:
+
+```shell
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --force-with-deps
+```
+
+  >**Note**
+  >
+  > Even if you have already installed the collection, it is a good idea to run the command above so the collection playbooks are updated if there has been any change since you downloaded it for the first time.
+
+
 Once you have all the pre-requisites ready, including the Ansible Vault secret file, you need to run the main playbook including the Vault password by adding the `--ask-vault-pass` option:
 
 ```shell
