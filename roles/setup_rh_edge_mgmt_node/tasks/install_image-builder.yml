@@ -171,14 +171,28 @@
               path:  "/opt/files"
               state: directory
 
-          - name: Clear previous Microshift images
+          - name: Clear previous Microshift images - TOML
             ansible.builtin.file:
               path: /opt/files/blueprint-microshift-embedded.toml
               state: absent
-      
-          - name: Extracting the Microshift images
+
+           - name: Clear previous Microshift images - YAML
+            ansible.builtin.file:
+              path: /opt/files/blueprint-microshift-embedded.yaml
+              state: absent
+           
+          - name: Extracting the Microshift images to TOML
             ansible.builtin.shell:
               cmd: jq -r '.images | .[] | ("[[containers]]\nsource = \"" + . + "\"\n")' "./usr/share/microshift/release/release-{{ ansible_architecture }}.json" >> "/opt/files/blueprint-microshift-embedded.toml"
+
+          - name: Extracting the Microshift images to YAML
+            ansible.builtin.shell:
+              cmd: |
+                jq -r '.images | .[] | .source' "./usr/share/microshift/release/release-{{ ansible_architecture }}.json" \
+                | sed 's/^/  - /' \
+                | awk 'BEGIN {print "builder_compose_containers:"} {print}' \
+                >> "/opt/files/blueprint-microshift-embedded.yaml"
+
 
           - name: Create ../files directory on localhost if it doesn't exist
             become: false
