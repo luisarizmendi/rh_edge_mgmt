@@ -176,7 +176,7 @@
               path: /opt/files/blueprint-microshift-embedded.toml
               state: absent
 
-           - name: Clear previous Microshift images - YAML
+          - name: Clear previous Microshift images - YAML
             ansible.builtin.file:
               path: /opt/files/blueprint-microshift-embedded.yaml
               state: absent
