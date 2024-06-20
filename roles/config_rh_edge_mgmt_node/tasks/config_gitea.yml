@@ -11,7 +11,12 @@
 - name: Set private IP variable
   set_fact:
     aap_ip_private: "{{ interface_result.stdout }}"
-        
+
+- name: Set binary extensions
+  set_fact:
+    binary_extensions: "{{ binary_extensions | default(['exe', 'bin', 'dll', 'so', 'gz', 'tar']) }}"
+
+
 ###########  ADMIN
 
 - name: create initial gitea user
@@ -83,11 +88,18 @@
             fi
           loop: "{{ repo_names }}"
 
-        - name: Copy template files to admin repos
+        - name: Copy template non-binary files to admin repos
           ansible.builtin.template:
             src: "{{ gitea_admin_repos_template }}/{{ item }}"
             dest: "{{ gitea_admin_repos_target | default('/tmp/gitea_admin_repos') }}/{{ gitea_admin_name }}/{{ item }}"
-          loop: "{{ _template_files_crop }}"
+          loop: "{{ _template_files_crop_nonbin }}"
+
+        - name: Copy template binary files to admin repos
+          ansible.builtin.copy:
+            src: "{{ gitea_admin_repos_template }}/{{ item }}"
+            dest: "{{ gitea_admin_repos_target | default('/tmp/gitea_admin_repos') }}/{{ gitea_admin_name }}/{{ item }}"
+          loop: "{{ _template_files_crop_bin }}"
+
 
         - name: create repos in Gitea
           ansible.builtin.uri:
@@ -162,6 +174,15 @@
           set_fact:
             _template_files_crop: "{{ _template_files.files | map(attribute='path') | map('regex_replace', '^' + gitea_user_repos_template + '/?', '') | list }}"
 
+        - name: Separate binary files
+          set_fact:
+            _template_files_crop_bin: "{{ _template_files_crop | select('search', '\\.(' + binary_extensions | join('|') + ')$') | list }}"
+
+        - name: Separate non-binary files
+          set_fact:
+            _template_files_crop_nonbin: "{{ _template_files_crop | reject('search', '\\.(' + binary_extensions | join('|') + ')$') | list }}"
+
+
         - name: Extract template directories
           set_fact:
             _template_directories: "{{ _template_files_crop | map('dirname') | unique | list }}"
@@ -201,11 +222,19 @@
             fi
           loop: "{{ range(1, gitea_user_count + 1) | product(repo_names) | list }}"
 
-        - name: Copy template files to user repos
+        - name: Copy non-binary template files to user repos
           ansible.builtin.template:
             src: "{{ gitea_user_repos_template }}/{{ item.0 }}"
             dest: "{{ gitea_user_repos_target | default('/tmp/gitea_user_repos') }}/{{ gitea_user_name }}{{ item.1 }}/{{ item.0 }}"
-          loop: "{{ _template_files_crop | product(range(1, gitea_user_count + 1)) | list }}"
+          loop: "{{ _template_files_crop_nonbin | product(range(1, gitea_user_count + 1)) | list }}"
+          vars:
+            user_number: "{{ item.1 }}"
+
+        - name: Copy binary template files to user repos
+          ansible.builtin.copy:
+            src: "{{ gitea_user_repos_template }}/{{ item.0 }}"
+            dest: "{{ gitea_user_repos_target | default('/tmp/gitea_user_repos') }}/{{ gitea_user_name }}{{ item.1 }}/{{ item.0 }}"
+          loop: "{{ _template_files_crop_bin | product(range(1, gitea_user_count + 1)) | list }}"
           vars:
             user_number: "{{ item.1 }}"
 
