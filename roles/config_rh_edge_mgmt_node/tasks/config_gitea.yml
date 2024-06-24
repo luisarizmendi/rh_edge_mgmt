@@ -47,6 +47,14 @@
           set_fact:
             _template_files_crop: "{{ _template_files.files | map(attribute='path') | map('regex_replace', '^' + gitea_admin_repos_template + '/?', '') | list }}"
 
+        - name: Separate binary files
+          set_fact:
+            _template_files_crop_bin: "{{ _template_files_crop | select('search', '\\.(' + binary_extensions | join('|') + ')$') | list }}"
+
+        - name: Separate non-binary files
+          set_fact:
+            _template_files_crop_nonbin: "{{ _template_files_crop | reject('search', '\\.(' + binary_extensions | join('|') + ')$') | list }}"
+
 
         - name: Extract template directories
           set_fact:
