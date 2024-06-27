@@ -240,10 +240,25 @@
               auth_file_path = "/etc/osbuild-worker/pull-secret.json"
             dest: /etc/osbuild-worker/osbuild-worker.toml
 
-        - name: Restart osbuild-worker@1.service
-          systemd:
-            name: osbuild-worker@1
-            state: restarted
- 
+#        - name: Restart osbuild-worker@1.service
+#          systemd:
+#            name: osbuild-worker@1
+#            state: restarted
 
+        # DOCUMENTATION NOW SAYS THAT YOU HAVE TO REBOOT THE SERVER: https://docs.redhat.com/en/documentation/red_hat_build_of_microshift/4.14/html/installing/microshift-embed-in-rpm-ostree-for-offline-use#microshift-embed-microshift-update-osbuilder-worker_microshift-embed-rpm-ostree-offline-use
+        - name: Reboot (as per indicated in the documentation)
+          become: true
+          reboot:
+            msg: "Reboot initiated by Ansible"
+            connect_timeout: 5
+            reboot_timeout: 300
+            pre_reboot_delay: 0
+            post_reboot_delay: 30
+            test_command: uptime
+
+        - name: Ping the target host
+          ping:
+          
+        - debug:
+            msg: "Reboot done"
  
