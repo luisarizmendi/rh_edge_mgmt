@@ -27,8 +27,8 @@
     - name: Set default required repositories if not defined
       set_fact:
         required_repos:
-          - rhel-9-for-x86_64-appstream-rpms
-          - rhel-9-for-x86_64-baseos-rpms
+          - rhel-9-for-{{ system_arch | default('x86_64') }}-appstream-rpms
+          - rhel-9-for-{{ system_arch | default('x86_64') }}-baseos-rpms
       when: required_repos is not defined
 
     - name: Ensure required repositories are enabled

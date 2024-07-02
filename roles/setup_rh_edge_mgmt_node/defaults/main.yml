@@ -5,12 +5,16 @@
 #red_hat_user:
 #red_hat_password:
 
+system_arch: "x86_64"
+
 ### Image Builder
 include_image_builder: true
 microshift: true
 microshift_release: 4.15
 microshift_get_offline_images: true
-rhel_iso_download: 6a9f135b8836edd06aba1b94fd6d0e72bd97b4115a3d2a61496b33f73e0a13a5
+rhel_iso_download_x86_64: 6a9f135b8836edd06aba1b94fd6d0e72bd97b4115a3d2a61496b33f73e0a13a5
+rhel_iso_download_aarch64: 7de492ee2cda87a1f88ca36920f7676c62a7a70920f3305bda90c39359a86017
+
 
 ### FDO
 include_fdo: true

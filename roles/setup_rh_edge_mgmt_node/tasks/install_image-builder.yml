@@ -11,11 +11,33 @@
     subscription-manager attach
     subscription-manager config --rhsm.manage_repos=1
 
-- name: Prepare Image Builder server
+- name: Prepare Image Builder server in x86_64
   become: true
   ansible.builtin.import_role:
     name: infra.osbuild.setup_server
+  when: ansible_architecture is not defined or ansible_architecture == "x86_64"
 
+- name: Prepare Image Builder serverin aarch64
+  become: true
+  ansible.builtin.import_role:
+    name: infra.osbuild.setup_server
+  vars:
+    _setup_server_base_packages:  
+      - rsync
+      - osbuild-composer
+      - composer-cli
+      - cockpit-composer
+      - bash-completion
+      - firewalld
+      - genisoimage
+      - httpd
+      - cockpit
+      - weldr-client
+      - python3
+      - lorax
+      - pykickstart
+  when: ansible_architecture == "aarch64"
+  
 - name: Install additional packages
   become: true
   ansible.builtin.dnf:
@@ -29,7 +51,6 @@
     - mtools
     - xorriso
     - genisoimage
-    - syslinux
     - isomd5sum
     - lorax
     - butane
@@ -37,7 +58,6 @@
     - rpmlint
     - yum-utils
     - createrepo
-    - butane
     - tree
 
 
@@ -47,7 +67,7 @@
 
 
 - name: Download RHEL ISO
-  when: rhel_iso_download is defined and rhel_iso_download != False
+  when: (rhel_iso_download_x86_64 or rhel_iso_download_aarch64) is defined and (rhel_iso_download_x86_64 or rhel_iso_download_aarch64) != False
   become: true
   block: 
     - name: Include secrets file with offline_token
@@ -74,20 +94,35 @@
       retries: 15
       delay: 20
 
-    - name: Download rhel boot iso
+    - name: Download rhel boot x86_64 iso
       ansible.builtin.get_url:
-        url: "https://api.access.redhat.com/management/v1/images/{{ rhel_iso_download }}/download"
+        url: "https://api.access.redhat.com/management/v1/images/{{ rhel_iso_download_x86_64 }}/download"
         headers:
           accept: "application/json"
           Authorization: "Bearer {{ temp_token.json.access_token }}"
         dest: "{{ rhel_iso_path | default('/usr/share/rhel-iso') }}/rhel-boot.iso"
         mode: "0644"
-        checksum: "sha256: {{ rhel_iso_download }}"
+        checksum: "sha256: {{ rhel_iso_download_x86_64 }}"
       register: download_rhel_boot_iso
       until: download_rhel_boot_iso is not failed
       retries: 15
       delay: 20
+      when: ansible_architecture is not defined or ansible_architecture == "x86_64"
 
+    - name: Download rhel boot aarch64 iso
+      ansible.builtin.get_url:
+        url: "https://api.access.redhat.com/management/v1/images/{{ rhel_iso_download_aarch64 }}/download"
+        headers:
+          accept: "application/json"
+          Authorization: "Bearer {{ temp_token.json.access_token }}"
+        dest: "{{ rhel_iso_path | default('/usr/share/rhel-iso') }}/rhel-boot.iso"
+        mode: "0644"
+        checksum: "sha256: {{ rhel_iso_download_aarch64 }}"
+      register: download_rhel_boot_iso
+      until: download_rhel_boot_iso is not failed
+      retries: 15
+      delay: 20
+      when: ansible_architecture == "aarch64"
 
 - name: Prepare Image Builder for Microshift
   become: true

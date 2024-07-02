@@ -6,6 +6,7 @@
 * [Overview of the preparation workflow](#overview-of-the-preparation-workflow)
 * [Prepare your environment](#prepare-your-environment)
 * [Clone demo repo ](#clone-demo-repo)
+* [Terraform prerequisites](#terraform-prerequisites)
 * [Edge Management Ansible Collection prerequisites](#edge-management-ansible-collection-prerequisites)
  
   - [Get your Ansible Controller Manifest](#get-your-ansible-controller-manifest)
@@ -13,7 +14,6 @@
   - [Get your Pull Secret](#get-your-pull-secret)
   - [Create Vault Secret file](#create-vault-secret-file)
   - [Prepare Ansible inventory and variables](#prepare-ansible-inventory-and-variables)
-
 
 * [Demo specific prerequisites](#demo-specific-prerequisites)
  
@@ -39,6 +39,10 @@ After the deployment you will have the following running sevices at the Edge Man
 * Cockpit: 9090
 * Gitea: 3000
 
+  >**Note**
+  >
+  > As part of this lab we are not deploying any secret manager service integraged with Ansible Automation Platform, so you will find some variables containing passwords in plain text in several Jobs, but it is important to mention that in production that won't be the case
+
 
 
 ## Prepare your environment
@@ -47,15 +51,18 @@ In order to deploy/prepare the lab you will only the Edge Management node, the E
 
 Remember that there are two devices/VMs involved in the demo:
 
-* Edge Management node: I've been able to deploy everything on a VM with 4 vCores and 10GB of memory. Storage will depend on the number of RHDE images that you generate.
+* Edge Management node: I've been able to deploy everything on a VM with 4 vCores and 10GB of memory. Storage will depend on the number of RHDE images that you generate. If you want to be sure, give it 150GB (it won't use all that space probably)
+The Edge Management node will nee to have a RHEL 9.x installed (this lab has been tested with RHEL 9.3), "minimal install" is enough. You will need to either have a passwordless sudo user in that system or include the sudo password in the Ansible inventory.
+
+  >**Note**
+  >
+  > Remember that, as part of this demo, a Terraform script is provided to create, install RHEL and perform the required config in that VM. This is not required to deploy the lab but it will simplify it in case you want to directly run this server in AWS.
 
 * Edge Device: This will depend on what you install on top, but for the base deployment you can use 1.5 vCores, 3GB of memory and 50GB disk.
 
 
-The Edge Management node will nee to have a RHEL 9.x installed (this lab has been tested with RHEL 9.3), "minimal install" is enough. You will need to either have a passwordless sudo user in that system or include the sudo password in the Ansible inventory.
-
-
 Your laptop will need Ansible installed to run the playbooks contained in the [Edge Management Ansible Collection](https://galaxy.ansible.com/ui/repo/published/luisarizmendi/rh_edge_mgmt/) (see next section). You will also need `git` to clone the repo in the next step and, if using VMs, a virtualization hypervisor (`libvirt` and  Virtual Machine Manager are recommended).
+
 
 
 
@@ -64,7 +71,8 @@ Your laptop will need Ansible installed to run the playbooks contained in the [E
 Clone the this repo and move your CLI prompt to the `ansible` directory on the path where the actual demo is located. The demo directory should have a similar organization as the one shown below, you will need to move inside the `ansible` directory which will contain, among others, the inventory, playbooks and vars used for the demo. 
 
 ```bash
-
+├── terraform
+...
 ├── ansible
 │   ├── files
 ...
@@ -87,19 +95,44 @@ When you find a reference to a path during this lab deploymend guide it will con
   >
   >  You might find that you don't have the vars/secrets.yaml file since that file is created as part of the prerequisites.
 
+## (Optional) Terraform prerequisites
+
+An optional Terraform script is provided to simplify the creation of the Edge Management server in AWS.
+
+First, you will need to [install Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) in your laptop.
+
+It also has some prerequisites if you want to use it:
+
+* You will need to Install Terraform in your laptop
+
+* Prepare your AWS credentials in `~/.aws/credentials`
+
+```
+[default]
+aws_access_key_id = your_access_key_id
+aws_secret_access_key = your_secret_access_key
+```
+
+  >**Note**
+  >
+  > If you are a Red Hatter you could order an AWS Blank environment in demo.redhat.com in order to get a valid AWS access key and secret
+
++ Prepare Terraform variables in file `../terraform/rhel_vm.tfvars`
+
+
+
 
 ## Edge Management Ansible Collection prerequisites
 
 You need to install the [Ansible Collection](https://github.com/luisarizmendi/rh_edge_mgmt) on your laptop:
 
 ```shell
-ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --force-with-deps
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --upgrade
 ```
 
   >**Note**
   >
   > Even if you have already installed the collection, it is a good idea to run the command above so the collection playbooks are updated if there has been any change since you downloaded it for the first time.
-
 
 The Collection [setup_rh_edge_mgmt_node role](https://github.com/luisarizmendi/rh_edge_mgmt/tree/main/roles/setup_rh_edge_mgmt_node) and [config_rh_edge_mgmt_node role](https://github.com/luisarizmendi/rh_edge_mgmt/tree/main/roles/config_rh_edge_mgmt_node) have some pre-requisites. This is the summary (all for installing the services):
 
@@ -130,9 +163,12 @@ Save apart your `manifest.zip` file in `files` directory (a different location c
   >
   > If you want to check the contents of the ZIP file you will see a `consumer_export.zip` file and a `signature` inside.
 
+
 If you use the default path you should have the `manifest.zip` file in this path:
 
 ```bash
+├── terraform
+...
 ├── ansible
 │   ├── files
 │       └── manifest.zip
@@ -148,6 +184,8 @@ If you use the default path you should have the `manifest.zip` file in this path
 └── README.md
 
 ```
+
+
 
 ### Get your Red Hat Customer Portal Offline Token
 
@@ -196,6 +234,8 @@ red_hat_password: <your RHN password>
 If you use the default path you should have the `secrets.yml` file in this path:
 
 ```bash
+├── terraform
+...
 ├── ansible
 │   ├── files
 ...
@@ -211,6 +251,8 @@ If you use the default path you should have the `secrets.yml` file in this path:
 └── README.md
 
 ```
+
+
 
 ### Prepare Ansible inventory and variables
 
@@ -230,7 +272,7 @@ all:
 
 
 
-Also prepare the variables in the `playbooks/main.yml` playbook.
+Also prepare the variables in the `playbooks/main.yml` playbook choosing the system architecture, Microshift release, user and passwords, etc...
 
 
 ```yaml
@@ -245,6 +287,7 @@ Also prepare the variables in the `playbooks/main.yml` playbook.
         name: luisarizmendi.rh_edge_mgmt.setup_rh_edge_mgmt_node
       vars:
         ### COLLECTION VARS
+        system_arch: "x86_64"
         microshift: true
         microshift_release: 4.15
 
@@ -253,6 +296,7 @@ Also prepare the variables in the `playbooks/main.yml` playbook.
         name: luisarizmendi.rh_edge_mgmt.config_rh_edge_mgmt_node
       vars:
         ### COLLECTION VARS
+        system_arch: "x86_64"
         image_builder_admin_name: admin
         image_builder_admin_password: R3dh4t1!
         image_builder_custom_rpm_files:  ../templates/custom-rpms
@@ -270,6 +314,7 @@ Also prepare the variables in the `playbooks/main.yml` playbook.
   > If you are using the directory tree of this example you could keep the variables that you find there (`gitea_admin_repos_template`, `aap_config_template`, ...), but probably you will need to configure the `image_builder_admin_name` and `image_builder_admin_password` with the user with `sudo` privileges in the RHEL server where you installed the Image Builder. You will also need to include your container repository (see next point).
 
 
+
 ## Demo specific prerequisites
 
 So far you prepared the prerequisites of any demo/lab deployed with the [Edge Management Ansible Collection](https://galaxy.ansible.com/ui/repo/published/luisarizmendi/rh_edge_mgmt/), but this demo also has some specific requirements that are mentioned below.
@@ -281,6 +326,8 @@ During the demo there are some optional steps where you will need to push or mov
   >**Note**
   >
   > If you don't want to show those demo steps, you can keep `apps_registry: quay.io/luisarizmendi` and the applications will be deployed, although you won't be able to alter the container tags in the registry...
+
+Probably you want to use Quay.io so first, check that you can login:
 
 ```bash
 podman login -u <your-quay-user> quay.io
@@ -300,8 +347,41 @@ skopeo copy docker://quay.io/luisarizmendi/simple-http:prod docker://quay.io/<yo
 
 Remember to change visibility of both 2048 and simple-http images to "public" in each "Repository Settings" 
 
+### Subscriptions
+
+The demo makes use of Microshift, which needs OCP and Fast-Datapath repositories enabled. Your subscription must have them available to be used.
+
 
 ## Deploy the lab
+
+  >**Note**
+  >
+  > The deployment will take long, expect something like 60-70 minutes depending on the number of configured users, VM/device resources and network connectivity
+
+
+### If you want to use the optional Terraform script (use AWS)
+If you want to use the provided terraform script to create the server in AWS, you will need to move one level up in the directory and:
+
+1. Use the right Terraform variable file (either x86_64 or aach64) by copy the specific file to `terraform/rhel_vm.tfvars`, for example:
+
+```shell
+cd ..
+cp terraform/rhel_vm.tfvars.x86_64 terraform/rhel_vm.tfvars
+```
+
+
+  >**Note**
+  >
+  > Take a look to the Terraform variables, you might want to change the region too.
+
+2. Run:
+
+```shell
+./create.sh
+```
+
+
+### If you have your VM/server prepared manually (now AWS)
 
 First, be sure that you have the latest version of the collection:
 
@@ -320,11 +400,7 @@ Once you have all the pre-requisites ready, including the Ansible Vault secret f
 ansible-playbook -vvi inventory --ask-vault-pass playbooks/main.yml 
 ``` 
 
-The deployment will take some time, depending on the edge management device/VM and internet connection.
 
-  >**Note**
-  >
-  > The deployment will take long, expect something like 60-70 minutes depending on the number of configured users, VM/device resources and network connectivity
 
 ## Pre-flight checks
 
@@ -346,7 +422,7 @@ Go to `quay.io` in the 2024 repository and check that the "prod" tag is pointing
 ![2048 tags](images/rhde_gitops_quay-2048.png)
 
 
-You should also check that the image in the `device-edge-configs/APPs/microshift/manifest/2-deployment.yml` file on Gitea is `v1` and not `v3`.
+You should also check that the image in the `rhde/<environment>/rhde_config/apps/microshift/manifest/2048/app_2048-microshift-2-deploy.yml` file on Gitea is `v1` and not `v3`.
 
 If this environment was never used probably it will be correctly assigned but if you already ran the demo the "prod" tag will be probably pointing to "v3".
 
@@ -363,9 +439,9 @@ The demo will need to create at least three OS images  (take a look at [minute 4
 2. The upgraded image without some of the required packages by Greenboot
 3. The upgraded image but including the required packages
 
-By default, when you "publish" an image the last one that you created is the one that is used. That behaviour can be changed by changing the value `latest` to the version that you want to publish in the `device-edge-images/production-image-deploy.yml` file located Gitea, so you could change that to `0.0.1`, then create the first image with the provided blueprint (just create, you don't need to publish until you run the demo), then create the second and third images using the v2 and v3 blueprints.
+By default, when you "publish" an image the last one that you created is the one that is used. That behaviour can be changed by changing the value `latest` to the version that you want to publish in the `device-edge-images/prod-image-deploy.yml` file located Gitea, so you could change that to `0.0.1`, then create the first image with the provided blueprint (just create, you don't need to publish until you run the demo), then create the second and third images using the v2 and v3 blueprints.
 
-Then, during the demo, you can just use the "Publish" task. After showing the onboarding, change the  `device-edge-images/production-image-deploy.yml` file to version 0.0.2 in order to publish the second image (that was already created in the pre-demo steps) and then do the same with the third image.
+Then, during the demo, you can just use the "Publish" task. After showing the onboarding, change the  `device-edge-images/prod-image-deploy.yml` file to version 0.0.2 in order to publish the second image (that was already created in the pre-demo steps) and then do the same with the third image.
 
 
 

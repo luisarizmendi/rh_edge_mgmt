@@ -4,7 +4,7 @@
 
 During this demo, the following features will be shown:
 
-* Create and publish an OSTree repository using a GitOps approach 
+* Create and publish an OSTree repository using a GitOps approach
 
 * Edge Device installation ISO generation:
   * Injecting kickstart in a base ISO (standard RHEL ISO)
@@ -18,22 +18,25 @@ During this demo, the following features will be shown:
   * FDO process
 
 * Application deployment using:
-  * Podman 
+  * Podman
     * Using shell scripting
     * Using Quadlet descriptors (GitOps)
   * Microshift
     * Using Manifest (GitOps)
     * Using Help
   * Custom RPM
-  
+
+* Edge Device Upgrade
+
 * Edge Device Self-Healing
   * Auto rollbacks in Operating System Upgrades
   * Edge Device configuration enforcing (GitOps)
   * Podman auto-update rollback
 
+* Virtual Machine management
+
 * Extras:
   * Serverless rootless container applications with just Podman
-
 
 ## Demo steps
 
@@ -43,18 +46,20 @@ This is the summary of the demo steps:
     1. Open Gitea and review the `device-edge-images` repository files
     2. Open Gitea webhook settings
     3. Open "Jobs" page in AAP and keep it visible
-    4. Push `rhde/prod/rhde_image/production-image-definition.yml` and `rhde/prod/rhde_image/production-kickstart.ks` files
+    4. Push `rhde/prod/rhde_image/prod-image-definition.yml` and `rhde/prod/rhde_image/prod-kickstart.ks` files
     5. Show the "New Edge Device Image" Workflow at the AAP
     6. Open the Image Builder Cockpit Web console and check that the image is being created
-    7. Describe the `rhde/prod/rhde_image/production-image-definition.yml` and `rhde/prod/rhde_image/production-kickstart.ks` that you used to create the image
+    7. Describe the `rhde/prod/rhde_image/prod-image-definition.yml` and `rhde/prod/rhde_image/prod-kickstart.ks` that you used to create the image
     8. Go to the "New Edge Device Image" workflow in AAP and Approve the Image Publishing
     9. Open the ostree-repo contents published, including `kickstarts` and the `repos` directories in `http://<edge-management-server-ip>/<user>/prod/`.
 
 2. Section 2 - Automated device onboarding
     1. Open the "Jobs" page in the AAP and keep it visible while performing the following steps.
-    2. Boot the edge server from Network and select the right Image in the PXE menu
-    3. Wait until the server bootsand review the Workflow Jobs in AAP
-    4. SSH into the edge device and explain how AAP auto-registration is done
+    2. Push a file with your pull-secret in Gitea under `rhde/prod/rhde_config/os/etc/crio/openshift-pull-secret`
+    3. Create the boot ISO using the AAP Job `Create ISO Kickstart`
+    4. Boot the edge server from ISO
+    5. Wait until the server bootsand review the Workflow Jobs in AAP
+    6. SSH into the edge device and explain how AAP auto-registration is done
 
 3. Section 3 - Consistent edge device configuration at scale
     - Configuration consistency across all devices
@@ -150,66 +155,64 @@ This is the summary of the demo steps:
     8. SSH the edge device and show that both the Ignition and FDO customizations took place. Show `journalctl -u fdo-client-linuxapp` 
     9. Show and explain how the FDO Vouchers where used during the onboarding (in this demo with auto-approval)
 
+7. Section 7 - Custom offline onboarding
 
+    - Prepare the automation scripts
 
+      0. (optional) Generate the Encryption Pass and Keys by launching the `Generate Encryption Pass and Keys` Job in AAP
+      1. Create the Encrypted TAR file with the automations by runnign the `Create Offline Automation Files` Job in AAP
 
+    - Create the custom RPMs
 
+      2. Go to where you have your local clone of the `rhde` repository, copy the generated files (`rhde_encrypted.tar` -> `onboarding-kiosk`) (`rhde_automation_encryption_key` and `rhde-automation-pub.pem` -> `usb-automation`) and push the changes
+      3. Create the RPMs launching the `Create Custom RPMs` Job in AAP
 
+    - Create the Offline Image
 
+      4. Open the image definition in Gitea in `rhde/dev/rhde_image/dev-image-definition.yml` and add the custom RPMs that you created (if they are not already there)
+      5. Show in the image definition the container images that will be embeded. If you want run the `Get list of Microshift offline images` Job in AAP to get the latest ones
+      6. Generate the RHDE image by changing something in `rhde/dev/rhde_image/dev-image-definition.yml` (ie. adding `tcpdump` package)
 
+    - Download the ISO
 
+      7. Inject the Kickstart in the generated ISO by running the `Create ISO Kickstart` Job in AAP. You need to customize the variables before running it.
+      8. Download the ISO from `http://<edge manager ip>/<username>/dev/iso/<username>-dev-rhel.iso`
 
+    - Deploy and trigger the onboarding
 
+      9. Prepare two devices/VMs and boot from ISO
+    
+   - USE CASE 1 - Manual token entry using keyboard (in device 1)
 
+      10. Try to access the APP `http://web-secret-http.apps.<ip>.nip.io` and SSH to the device and show Microshift Pods with `oc --kubeconfig /var/lib/microshift/resources/kubeadmin/kubeconfig get pod --all-namespaces`
+      11. Access the device/VM console 
+      12. Introduce the Encryption pass that you find in Gitea (`rhde/dev/rhde_config/scripts/offline-automation/output/rhde_automation_encryption_key`)
+      13. When the Kiosk mode disappears, refresh `http://web-secret-http.apps.<ip>.nip.io`, you should see now the secrets.
 
+   - USE CASE 2 - USB Key automation (in device 2)
 
+      10. Try to access the APP `http://web-secret-http.apps.<ip>.nip.io` and SSH to the device and show Microshift Pods with `oc --kubeconfig /var/lib/microshift/resources/kubeadmin/kubeconfig get pod --all-namespaces`
+      14. Copy the `rhde/dev/rhde_config/scripts/offline-automation/output/rhde_encrypted.tar` in an USB key
+      15. When Microshift is up, connect the USB Key to the device and wait few seconds
+      16. When the Kiosk mode disappears, refresh `http://web-secret-http.apps.<ip>.nip.io`, you should see now the secrets.
 
+    - BONUS - Automated offline upgrade
+      1. Create a new image
+      2. Download the certificates and pass from Gitea (`rhde/dev/rhde_config/scripts/offline-automation/output`)
+      3. Create an `input` and `output` directories
+      4. Create the script that will generate the ecnrypted TAR file in the `output` directory with the contents that you put in the `input` directory
+      5. Prepare the contents and copy them into a `input` directory
+      6. Run the script
+      7. Copy the `rhde_encrypted.tar` file to the USB key (top directory)
+      8. SSH into the device and see the running image with the `sudo rpm-ostree status` command. Open the USB log with `tail -f /var/log/usb_check.log`
+      9. Plug in the USB key and wait until the device reboots
+      10. Check again the device images with `sudo rpm-ostree status`
 
+8. Section 8 - Bulletproof system upgrades
 
-
-
-
-
-## DEMO deployment
-
-## DEMO steps
-
-### 1 - Modify the RHDE image description
-
-* Go to Gitea in the edge management host at port `3000`
-* Log in as a user (by default `user<number>`/`password<number>`)
-* Modify the file in `rhde/prod/rhde_image/production-image-definition.yml`. You can include the `bind-utils` package
-
-### 2 - Check that an Ansible Workflow automatically starts and build the new image
-
-* Log in the AAP Controller (port `8443`) as a regular user (by default `user<number>`/`password<number>`)
-* Check the "Jobs" view and see if a new Workflow has started 
-
-### 3 - Accept the image publishing in that Workflow once the image is created
-
-* Wait until the image is created, you can check the progress by using Cockpit (port `9090`)
-* Approve the image publishing in the Workflow
-
-### 4 - Create an ISO to deploy the image
-
-* Launch the `Create ISO Kickstart` task under "Templates" view in AAP Controller. Default variables should be ok unless you are not using default values for this demo
-* Download the ISO from the URL shown in the last `debug` message that you will find in the `Create ISO Kickstart` task output (maybe you need to "Reload output" when the task is done to see the debug message at the end)
-
-  >**Note**
-  >
-  > If you create/publish new versions of your image for your demo, you don't need to create additional ISO images, you will be able to re-use the same ISO while the environment (`prod`) or the image name changes.
-
-
-### 5 - Deploy the image in the edge device
-
-* Start the edge device from the ISO that you downloaded (using an USB if it's a physical device).
-* Wait until the deployment finishes. Then the device will reboot and use the local drive as first boot option
-* Wait a little bit until you see in AAP Controller a new Workflow execution (`Provision Edge Device` Workflow)
-
-
-### 6 - Check that the device is auto-registered in AAP and correctly onboarded (in this base demo it is just a change in the hostname)
-
-* Log into the edge deivice (you can check the IP in the AAP inventory)
-* Check that the hostname was changed and a new entry configured in `/etc/hosts`
-* You can also take a look at the Event Driven Automation Controller (port `8445`, credentials `admin`/`R3dh4t1!` if not customized during the deployment) to check out how the request were processed.
+    1. Go to Gitea and show files under `rhde/prod/rhde_config/virt`
+    2. Tag in the "Edge Devices" inventory one of the host by changing the variable `kvm_type` to the VM bundle name
+    3. Run the deployment of any VM bundle by running the "Deploy service in VM" Job selecting the bundle in the Survey
+    4. When the Workflow is finish, go to the device Cockpit (port `9090`) and check that the VMs and associated resources where created
+    5. Show how you can also manage the VMs lifecycle from the AAP by stopping all VMs associated to a VM bundle running the "KVM - Stop all bundle VMs" Job 
 

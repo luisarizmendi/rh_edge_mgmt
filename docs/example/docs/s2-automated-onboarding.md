@@ -1,12 +1,10 @@
 # Section 2 - Automated device onboarding
-
 ## Video
 
 [![Section 2 - Video](https://img.youtube.com/vi/R64e_BaVtF0/0.jpg)](https://www.youtube.com/watch?v=R64e_BaVtF0)
 
 
 ---
-
 
 
 During this section you need to bear in mind one important thing, during the device onboarding you will need to see the edge device Console terminal to see the device booting. This terminal is not the SSH terminal but the actual video output of the system. If you are using VMs for your demo/workshop that's not an issue because you can just open the VM's console but if you are using physical servers you will need either an external (big) screen connected to your device or a Video Capture Card (as the one shown in the [Recommended Hardware Section](README.md#recommended-hardware) to show the Console output on your laptop.
@@ -77,7 +75,7 @@ Once everything is ready, go ahead with the device onboarding:
   >**Note**
   >
   > In order to connect a machine in the local network to the remote node you will need to use a local subnet contained in `192.168.0.0/16` or `172.16.0.0/12`
-  
+
     - Initial Device Configuration: Here is where the "real" onboarding automation is made. In our example we are only doing one thing with our systems: changing the host name from `localhost` to `edge-<system mac address with no : characters>`
 
 
@@ -101,7 +99,7 @@ Once everything is ready, go ahead with the device onboarding:
 
 * Configure Edge Device: It's a workflow with a single Job:
 
-    - Copy config files: Gets the files from `device-edge-configs/OS` in Gitea and copy them into the edge device.
+    - Copy config files: Gets the files from `rhde/<environment>/rhde_config/os` in Gitea and copy them into the edge device.
 
 
 4. The magic behind this automated workflow is that, as explained in [Section 1 - Creating RHEL Images the GitOps way](#section-1---creating-rhel-images-the-gitops-way), the kickstart file crestes an auto-registration Systemd unit and script that is launched on the system first boot. That scripts calls the Event Driven Automation service to start the workflows in AAP. You can now SSH to the edge device and check those script and systemd unit with the following commands as root: 

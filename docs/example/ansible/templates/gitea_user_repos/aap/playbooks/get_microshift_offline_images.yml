@@ -1,0 +1,7 @@
+---
+- name: compose an image via Image Builder
+  hosts:
+    - all
+  tasks:
+    - name: Get Microshift container images
+      shell: cat {{ offline_images_toml | default('/opt/files/blueprint-microshift-embedded.yaml') }}

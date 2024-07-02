@@ -1,5 +1,7 @@
 ---
 
+system_arch: "x86_64"
+
 ### Image Builder
 include_image_builder: true
 image_builder_admin_name: admin
