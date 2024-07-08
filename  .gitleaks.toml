@@ -11,6 +11,8 @@
     '''docs\/example\/ansible\/templates\/gitea_user_repos\/rhde\/test\/rhde_image\/test-image-definition.yml$''',
 
     '''docs\/example\/ansible\/templates\/fdo\/fdo-files\/var\/opt\/aap-eda.token''',
-  ]
-        
 
+    '''docs\/example\/ansible\/templates\/aap_config.j2''',
+
+    '''docs\/example\/ansible\/templates\/gitea_user_repos\/rhde/\dev\/rhde_image\/dev-image-definition.yml''',
+  ]

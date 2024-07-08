@@ -74,22 +74,18 @@ Clone the this repo and move your CLI prompt to the `ansible` directory on the p
 ├── terraform
 ...
 ├── ansible
-│   ├── files
-...
 │   ├── inventory
 │   ├── playbooks
 │   │   ├── main.yml
 │   ├── templates
 ...
-│   └── vars
-│       └── secrets.yml
 ├── docs
 ...
 └── README.md
 
 ```
 
-When you find a reference to a path during this lab deploymend guide it will consider that you CLi is under the `ansible` directory, so `files` will be in fact `<your cloned demo directory/ansible/files>`.
+When you find a reference to a path during this lab deploymend guide it will consider that you CLi is under the `ansible` directory, so `playbooks` will be in fact `<your cloned demo directory/ansible/playbooks>`.
 
   >**Note**
   >
@@ -157,7 +153,7 @@ You have the steps in the [Ansible Platform Documentation](https://access.redhat
 
 4. Go back to "Details" tab and click "Export Manifest" 
 
-Save apart your `manifest.zip` file in `files` directory (a different location can be configured with the `manifest_file` variable).
+Create a `files` directory under `ansible` and save apart your `manifest.zip` file in that `files` directory (a different location can be configured with the `manifest_file` variable).
 
   >**Note**
   >
@@ -176,8 +172,6 @@ If you use the default path you should have the `manifest.zip` file in this path
 │   ├── playbooks
 ...
 │   ├── templates
-...
-│   └── vars
 ...
 ├── docs
 ...
@@ -272,7 +266,13 @@ all:
 
 
 
-Also prepare the variables in the `playbooks/main.yml` playbook choosing the system architecture, Microshift release, user and passwords, etc...
+Also prepare the variables in the `playbooks/main.yml` playbook, you may want to change:
+
+* System architecture in `system_arch` (either `x86_64` or `aarch64`). Remember that `aarch64` is under testing.
+* Microshift release in `microshift_release`
+* Edge Management server sudo user and passwords in `image_builder_admin_name` and `image_builder_admin_password`. This is the user with `sudo` privileges that you created in the RHEL server where you installed the Image Builder
+* You will also need to include your container repository in `apps_registry` (see next point).
+
 
 
 ```yaml
@@ -311,7 +311,7 @@ Also prepare the variables in the `playbooks/main.yml` playbook choosing the sys
 
   >**Note**
   >
-  > If you are using the directory tree of this example you could keep the variables that you find there (`gitea_admin_repos_template`, `aap_config_template`, ...), but probably you will need to configure the `image_builder_admin_name` and `image_builder_admin_password` with the user with `sudo` privileges in the RHEL server where you installed the Image Builder. You will also need to include your container repository (see next point).
+  > If you are using the directory tree of this example you could keep the variables that you find there (`gitea_admin_repos_template`, `aap_config_template`, ...)
 
 
 
@@ -344,6 +344,10 @@ skopeo copy docker://quay.io/luisarizmendi/simple-http:v1 docker://quay.io/<your
 skopeo copy docker://quay.io/luisarizmendi/simple-http:v2 docker://quay.io/<your-quay-user>/simple-http:v2
 skopeo copy docker://quay.io/luisarizmendi/simple-http:prod docker://quay.io/<your-quay-user>/simple-http:prod
 ```
+
+  >**Note**
+  >
+  > The container images are multiarchitecture, so you will be able to use it no matter if your system is `aarch64` or `x86_64`
 
 Remember to change visibility of both 2048 and simple-http images to "public" in each "Repository Settings" 
 
@@ -386,7 +390,7 @@ cp terraform/rhel_vm.tfvars.x86_64 terraform/rhel_vm.tfvars
 First, be sure that you have the latest version of the collection:
 
 ```shell
-ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --force-with-deps
+ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --upgrade
 ```
 
   >**Note**
@@ -416,7 +420,7 @@ These pre-flight checks should be performed just right after the deployment. You
 
 2) Check container images in your registry (Quay in our example):
 
-Go to `quay.io` in the 2024 repository and check that the "prod" tag is pointing to "v1". If not just create a new Tag "prod" by pressing the gearwheel on the "v1" label (at the right).
+Go to `quay.io` in the 2024 repository and check that the "prod" tag is pointing to "v1" .If not just create a new Tag "prod" by pressing the gearwheel on the "v1" label (at the right).
 
 
 ![2048 tags](images/rhde_gitops_quay-2048.png)
