@@ -27,6 +27,7 @@ report_to_rendezvous_endpoint_enabled: true
 ### AAP
 include_aap: true
 node_fqdn: edge-manager.demo
+aap_inventory_template: ../templates/aap_inventory.j2
 aap_sha_value: 714de904596f2f3312b8804eee0d2fdce6842ac2108dbf718f2107ef61d1598d   ## Tech Preview: Ansible Automation Platform 2.4 Containerized Setup
 #controller_postinstall_repo_url: ""
 aap_default_password: R3dh4t1!
