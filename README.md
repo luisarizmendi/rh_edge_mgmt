@@ -56,6 +56,9 @@ vi inventory
 ```shell
 ansible-playbook -vvi inventory --ask-vault-pass playbooks/main.yml
 ```
+  >**Note**
+  >
+  > In case you are running the playbook from/on the same machine you want to install (*Management Device*), make sure to remove the TASK on rebooting the device during the installation located [here](https://github.com/luisarizmendi/rh_edge_mgmt/blob/20cf5056e60ed4a5a668e5ebca314c53ddff28f3/roles/setup_rh_edge_mgmt_node/tasks/install_image-builder.yml#L284C1-L284C63)
 
 8. Wait until the playbook finishes and, after a couple of minutes, you will be able to access the deployed services in the target host with the default user/password (there are 3 users created by default, the first one is `user1`):
 
@@ -64,6 +67,9 @@ ansible-playbook -vvi inventory --ask-vault-pass playbooks/main.yml
 * Cockpit: 9090  - `admin/R3dh4t1!`
 * Gitea: 3000 - `user<number>/password<number>`
 
+>**Note**
+>
+> Make sure you don't have anything running on the target device for the ports above listed (i.e. 8080) otherwise the installation will fail
 
 9. You can now follow the [example demo steps](docs/example/README.md#demo-steps).
 
