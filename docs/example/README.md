@@ -56,7 +56,7 @@ The VPN connection is optional, it's pre-configured and will be setup if you dep
 
   >**Note**
   >
-  > This Lab has been prepared for RHEL 9 machines only (RHEL 9.4), `aarch64` architecrure is under testing.
+  > This Lab has been prepared for RHEL 9 machines only (RHEL 9.4), `aarch64` architecture is under testing.
 
 If you plan to use VMs you just need enough free resources in your laptop/server (more or less >6vCPUs, >14GB RAM, >150GB disk) for a couple of VMs:
 

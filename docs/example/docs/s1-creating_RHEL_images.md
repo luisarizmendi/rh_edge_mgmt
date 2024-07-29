@@ -71,12 +71,17 @@ Resolving deltas: 100% (10/10), done.
 
 ```
 
-* Move into the directory and edit the `prod-image-definition.yml` adding `bind-utils` in the `builder_compose_pkgs` section:
+* Move into the directory and edit the `prod-image-definition.yml` adding for example `bind-utils` in the `builder_compose_pkgs` section:
 
 ```bash
 larizmen@hal9k:/tmp/demo$ cd rhde/
 larizmen@hal9k:/tmp/demo/rhde$ vi prod/rhde_image/prod-image-definition.yml
 ```
+  >**Note**
+  >
+  > Notice that you can change default username and password provided in `prod-image-definition.yml` but then you would also need to change the default *Device Credentials* that you find in Ansible associated to the Edge Device
+
+
 
 * Push changes
 
