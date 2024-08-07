@@ -46,6 +46,8 @@ git push
   >**Note**
   >
   > This is important, if you don't do that your Microshift won't come up
+  >
+  > In case you decide to deploy Podman only (no Microshift) make sure to delete the corresponding folder `os/etc/microshift` from Gitea
 
 Once everything is ready, go ahead with the device onboarding:
 
