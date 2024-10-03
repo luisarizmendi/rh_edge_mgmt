@@ -19,6 +19,10 @@ I've been able to deploy everything on a VM with 4 vCores and 10GB of memory. St
 
 You need a server with RHEL 9 installed (the collection has been tested with RHEL 9.3) that will be the target node (selected in the Ansible inventory) where installing the services. It must be registered with a valid Red Hat Subscription.
 
+  >**Note**
+  >
+  >  If the target system default language is anything but English some checks (dnf repolist for example) might fail
+
 ### Ansible Collections
 
 You need to have a couple of Collections installed on your laptop:
