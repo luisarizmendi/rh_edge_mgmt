@@ -63,7 +63,7 @@
 
     - name: Be sure that the directories exist
       file:
-        path: "{{ item }}"
+        path: "/{{ item }}"
         state: directory
       loop: "{{ _template_directories }}"
 
