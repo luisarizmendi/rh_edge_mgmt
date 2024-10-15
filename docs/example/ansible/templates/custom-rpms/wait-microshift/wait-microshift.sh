@@ -20,7 +20,7 @@ for ((i=1; i<=3; i++)); do
 
     while ! $all_running_completed; do
         all_running_completed=true
-        statuses=$(oc --kubeconfig /var/lib/microshift/resources/kubeadmin/kubeconfig get pods --all-namespaces | awk '{print $4}' | grep -v -e "Ready" -e "Completed" | grep -v STATUS)
+        statuses=$(oc --kubeconfig /var/lib/microshift/resources/kubeadmin/kubeconfig get pods --all-namespaces | awk '{if ($1 ~ "kube-" || $1 ~ "openshift-") print $4}' | grep -v -e "Ready" -e "Completed" | grep -v STATUS)
 
         for status in $statuses; do
             # Check if the status is not Running or Completed
