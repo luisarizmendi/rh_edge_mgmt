@@ -73,7 +73,7 @@ if conn_name:
     # Run the second shell command to get the MAC address
     try:
         MAC_ADDRESS = subprocess.check_output(f"ip addr | grep {conn_name} -A 1 | grep link | awk '{{print $2}}' | sed 's/://g'", shell=True)
-        MAC_ADDRESS = MAC_ADDRESS.decode("utf-8").strip()
+        MAC_ADDRESS = MAC_ADDRESS.decode("utf-8").strip().upper()
     except subprocess.CalledProcessError as e:
         print(f"Error running the second shell command: {e}")
         MAC_ADDRESS = None
