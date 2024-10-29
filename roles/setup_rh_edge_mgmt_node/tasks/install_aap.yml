@@ -151,6 +151,9 @@
         group: "{{ ansible_user }}"
         mode: 0644
 
+    - name: Install awx.awx
+      shell: ansible-galaxy collection install awx.awx  --upgrade
+
     - name: Run AAP installer
       shell: |
         cd /home/{{ ansible_user }}/aap_install
