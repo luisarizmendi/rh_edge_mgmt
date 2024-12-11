@@ -58,7 +58,7 @@
 
         - name: Get latest image versions from blueprint {{ builder_blueprint_name }}
           set_fact:
-            latest_image_version_blueprint: "{{ all_image_versions_blueprint | max}}"
+            latest_image_version_blueprint: "{{  all_image_versions_blueprint | community.general.version_sort | last }}"
 
 
         - ansible.builtin.debug:
