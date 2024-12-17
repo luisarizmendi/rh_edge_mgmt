@@ -396,6 +396,17 @@ ansible-galaxy collection install luisarizmendi.rh_edge_mgmt --upgrade
   >**Note**
   >
   > Even if you have already installed the collection, it is a good idea to run the command above so the collection playbooks are updated if there has been any change since you downloaded it for the first time.
+  >
+  > **Warning**  
+  > If your previous installation of AAP failed, make sure to run the uninstall command from `aap_install` directory in the Edge Management machine, because generated resources like TLS certificates are not regenerated on reinstallation:  
+  > ```shell
+  > ansible-playbook -i inventory ansible.containerized_installer.uninstall -e container_keep_images=true 
+  > ```  
+  > **NOTICE**  
+  > There is a breaking change introduced in the latest Podman version, so make sure your Podman version is <= 2:4.6.1  
+  > You can add a condition [here](https://github.com/luisarizmendi/rh_edge_mgmt/blob/main/roles/setup_rh_edge_mgmt_node/tasks/install_gitea.yml#L12) to make sure the right version is installed:
+  > ` "podman <= 2:4.6.1" `
+
 
 
 Once you have all the pre-requisites ready, including the Ansible Vault secret file, you need to run the main playbook including the Vault password by adding the `--ask-vault-pass` option:
