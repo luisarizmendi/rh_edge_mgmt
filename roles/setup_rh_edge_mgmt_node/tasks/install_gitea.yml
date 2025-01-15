@@ -9,7 +9,7 @@
       become: true
       ansible.builtin.dnf:
         state: latest
-        name: "podman"
+        name: "podman-4.6.1"
 
 
     - name: Check if firewalld is installed
